@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useSettings } from '@/context/SettingsContext';
 import Settings from './Settings';
 import styles from './Header.module.css';
 
@@ -15,24 +16,12 @@ function GearIcon() {
 
 export default function Header() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
-  );
-  const [hardMode, setHardMode] = useState(false);
-  const [colorBlind, setColorBlind] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode);
-  }, [darkMode]);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('colorblind', colorBlind);
-  }, [colorBlind]);
+  const { darkMode, hardMode, colorBlind, setDarkMode, setHardMode, setColorBlind } = useSettings();
 
   return (
     <>
       <header className={styles.header}>
-        <span className={styles.title}>not wordle</span>
+        <span className={styles.title}>Wordlen't</span>
         <button onClick={() => setSettingsOpen(true)} className={styles.settingsBtn} aria-label="open settings">
           <GearIcon />
         </button>
