@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root {
+  --tile-correct-bg: #16a34a;
+  --tile-present-bg: #ca8a04;
   --background: #ffffff;
   --foreground: #171717;
   --surface: #ffffff;
@@ -13,6 +15,11 @@
   --tile-empty-border: #d4d4d4;
   --tile-filled-border: #737373;
   --tile-absent-bg: #a3a3a3;
+}
+
+.colorblind {
+  --tile-correct-bg: #f5793a;
+  --tile-present-bg: #85c0f9;
 }
 
 .dark {

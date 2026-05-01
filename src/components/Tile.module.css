@@ -29,14 +29,14 @@
 .filled { border-color: var(--tile-filled-border); }
 
 .correct {
-  border-color: #16a34a;
-  background: #16a34a;
+  border-color: var(--tile-correct-bg);
+  background: var(--tile-correct-bg);
   color: white;
 }
 
 .present {
-  border-color: #ca8a04;
-  background: #ca8a04;
+  border-color: var(--tile-present-bg);
+  background: var(--tile-present-bg);
   color: white;
 }
 

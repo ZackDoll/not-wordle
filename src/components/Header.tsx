@@ -25,6 +25,10 @@ export default function Header() {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('colorblind', colorBlind);
+  }, [colorBlind]);
+
   return (
     <>
       <header className={styles.header}>
