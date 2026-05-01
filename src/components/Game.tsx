@@ -1,30 +1,27 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { BoardState } from '@/types/game';
+import type { BoardState, TileState } from '@/types/game';
 import Board from './Board';
 import Keyboard from './Keyboard';
 
 const ROWS = 6;
 const COLS = 5;
-const TARGET = 'VALID'.split('');
 
-function scoreGuess(guess: string[]): import('@/types/game').TileState[] {
-  const result: import('@/types/game').TileState[] = Array(COLS).fill('absent');
-  const remaining = TARGET.reduce<Record<string, number>>((acc, l) => {
+function scoreGuess(guess: string[], target: string[]): TileState[] {
+  const result: TileState[] = Array(COLS).fill('absent');
+  const remaining = target.reduce<Record<string, number>>((acc, l) => {
     acc[l] = (acc[l] ?? 0) + 1;
     return acc;
   }, {});
 
-  // first pass: correct positions
   for (let i = 0; i < COLS; i++) {
-    if (guess[i] === TARGET[i]) {
+    if (guess[i] === target[i]) {
       result[i] = 'correct';
       remaining[guess[i]]--;
     }
   }
 
-  // second pass: present but wrong position
   for (let i = 0; i < COLS; i++) {
     if (result[i] === 'correct') continue;
     if ((remaining[guess[i]] ?? 0) > 0) {
@@ -42,18 +39,25 @@ const emptyBoard = (): BoardState =>
   );
 
 export default function Game() {
+  const [target, setTarget] = useState<string[]>([]);
   const [board, setBoard] = useState<BoardState>(emptyBoard());
   const [currentRow, setCurrentRow] = useState(0);
   const [currentCol, setCurrentCol] = useState(0);
+
+  useEffect(() => {
+    fetch('/api/word')
+      .then(r => r.json())
+      .then(({ word }: { word: string }) => setTarget(word.split('')));
+  }, []);
 
   const handleKey = useCallback(
     (key: string) => {
       if (currentRow >= ROWS) return;
 
       if (key === 'ENTER') {
-        if (currentCol < COLS) return;
+        if (currentCol < COLS || target.length === 0) return;
         const guess = board[currentRow].map(t => t.letter);
-        const states = scoreGuess(guess);
+        const states = scoreGuess(guess, target);
         setBoard(prev => {
           const next = prev.map(r => r.map(t => ({ ...t })));
           states.forEach((state, i) => {
@@ -86,7 +90,7 @@ export default function Game() {
       });
       setCurrentCol(c => c + 1);
     },
-    [currentRow, currentCol]
+    [currentRow, currentCol, board, target]
   );
 
   useEffect(() => {
