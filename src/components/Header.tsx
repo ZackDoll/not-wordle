@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Settings from './Settings';
 
 function GearIcon() {
@@ -14,7 +14,13 @@ function GearIcon() {
 
 export default function Header() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+  }, [darkMode]);
   const [hardMode, setHardMode] = useState(false);
   const [colorBlind, setColorBlind] = useState(false);
 
