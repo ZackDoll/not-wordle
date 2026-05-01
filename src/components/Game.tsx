@@ -15,12 +15,19 @@ const emptyBoard = (): BoardState =>
 
 export default function Game() {
   const [board, setBoard] = useState<BoardState>(emptyBoard());
-  const [currentRow] = useState(0);
+  const [currentRow, setCurrentRow] = useState(0);
   const [currentCol, setCurrentCol] = useState(0);
 
   const handleKey = useCallback(
     (key: string) => {
-      if (key === 'ENTER') return;
+      if (currentRow >= ROWS) return;
+
+      if (key === 'ENTER') {
+        if (currentCol < COLS) return;
+        setCurrentRow(r => r + 1);
+        setCurrentCol(0);
+        return;
+      }
 
       if (key === 'BACK') {
         if (currentCol === 0) return;
