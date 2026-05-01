@@ -1,7 +1,2 @@
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold tracking-tight">not wordle</h1>
-    </main>
-  );
-}
+import HomePage from "@/pages/HomePage";
+export default HomePage;
