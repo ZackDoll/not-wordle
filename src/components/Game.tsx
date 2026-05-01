@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { BoardState, TileState } from '@/types/game';
 import Board from './Board';
 import Keyboard from './Keyboard';
+import WinScreen from './WinScreen';
 
 const ROWS = 6;
 const COLS = 5;
@@ -43,6 +44,8 @@ export default function Game() {
   const [board, setBoard] = useState<BoardState>(emptyBoard());
   const [currentRow, setCurrentRow] = useState(0);
   const [currentCol, setCurrentCol] = useState(0);
+  const [won, setWon] = useState(false);
+  const [guessCount, setGuessCount] = useState(0);
 
   useEffect(() => {
     fetch('/api/word')
@@ -52,7 +55,7 @@ export default function Game() {
 
   const handleKey = useCallback(
     (key: string) => {
-      if (currentRow >= ROWS) return;
+      if (won || currentRow >= ROWS) return;
 
       if (key === 'ENTER') {
         if (currentCol < COLS || target.length === 0) return;
@@ -65,6 +68,10 @@ export default function Game() {
           });
           return next;
         });
+        if (states.every(s => s === 'correct')) {
+          setGuessCount(currentRow + 1);
+          setWon(true);
+        }
         setCurrentRow(r => r + 1);
         setCurrentCol(0);
         return;
@@ -90,7 +97,7 @@ export default function Game() {
       });
       setCurrentCol(c => c + 1);
     },
-    [currentRow, currentCol, board, target]
+    [won, currentRow, currentCol, board, target]
   );
 
   useEffect(() => {
@@ -108,6 +115,13 @@ export default function Game() {
     <div className="flex flex-col items-center gap-6 py-8">
       <Board board={board} />
       <Keyboard onKey={handleKey} />
+      {won && (
+        <WinScreen
+          word={target.join('')}
+          guesses={guessCount}
+          onDismiss={() => setWon(false)}
+        />
+      )}
     </div>
   );
 }
