@@ -1,4 +1,4 @@
-import { cn } from '@/utils/cn';
+import styles from './Keyboard.module.css';
 
 const ROWS = [
   ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
@@ -16,7 +16,7 @@ function BackspaceIcon() {
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-5 w-5 sm:h-6 sm:w-6"
+      className={styles.icon}
     >
       <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
       <line x1="18" y1="9" x2="12" y2="15" />
@@ -35,12 +35,7 @@ function Key({ label, onKey }: KeyProps) {
   return (
     <button
       onClick={() => onKey(label)}
-      className={cn(
-        'flex items-center justify-center rounded font-bold uppercase',
-        'h-12 sm:h-14',
-        'bg-neutral-300 dark:bg-neutral-600 text-neutral-900 dark:text-neutral-100',
-        isWide ? 'flex-[1.5] text-xs sm:text-sm' : 'flex-1 text-sm sm:text-base'
-      )}
+      className={isWide ? `${styles.key} ${styles.wide}` : styles.key}
     >
       {label === 'BACK' ? <BackspaceIcon /> : label}
     </button>
@@ -53,9 +48,9 @@ interface KeyboardProps {
 
 export default function Keyboard({ onKey }: KeyboardProps) {
   return (
-    <div className="flex w-[340px] sm:w-[400px] lg:w-[444px] flex-col gap-1 sm:gap-1.5">
+    <div className={styles.keyboard}>
       {ROWS.map((row, i) => (
-        <div key={i} className="flex gap-1 sm:gap-1.5">
+        <div key={i} className={styles.row}>
           {row.map((key) => (
             <Key key={key} label={key} onKey={onKey} />
           ))}

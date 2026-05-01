@@ -5,11 +5,27 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --surface: #ffffff;
+  --border: #e5e5e5;
+  --muted: #737373;
+  --key-bg: #d4d4d4;
+  --key-text: #171717;
+  --tile-empty-border: #d4d4d4;
+  --tile-filled-border: #737373;
+  --tile-absent-bg: #a3a3a3;
 }
 
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --surface: #171717;
+  --border: #262626;
+  --muted: #a3a3a3;
+  --key-bg: #525252;
+  --key-text: #f5f5f5;
+  --tile-empty-border: #525252;
+  --tile-filled-border: #a3a3a3;
+  --tile-absent-bg: #525252;
 }
 
 body {

@@ -5,6 +5,7 @@ import type { BoardState, TileState } from '@/types/game';
 import Board from './Board';
 import Keyboard from './Keyboard';
 import WinScreen from './WinScreen';
+import styles from './Game.module.css';
 
 const ROWS = 6;
 const COLS = 5;
@@ -112,7 +113,7 @@ export default function Game() {
   }, [handleKey]);
 
   return (
-    <div className="flex flex-col items-center gap-6 py-8">
+    <div className={styles.game}>
       <Board board={board} />
       <Keyboard onKey={handleKey} />
       {won && (

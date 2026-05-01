@@ -1,0 +1,47 @@
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 2px solid transparent;
+  height: 3.5rem;
+  width: 3.5rem;
+  font-size: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .tile {
+    height: 4rem;
+    width: 4rem;
+    font-size: 1.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tile {
+    height: 4.5rem;
+    width: 4.5rem;
+  }
+}
+
+.empty  { border-color: var(--tile-empty-border); }
+.filled { border-color: var(--tile-filled-border); }
+
+.correct {
+  border-color: #16a34a;
+  background: #16a34a;
+  color: white;
+}
+
+.present {
+  border-color: #ca8a04;
+  background: #ca8a04;
+  color: white;
+}
+
+.absent {
+  border-color: var(--tile-absent-bg);
+  background: var(--tile-absent-bg);
+  color: white;
+}

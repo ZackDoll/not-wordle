@@ -1,8 +1,9 @@
 import Game from '@/components/Game';
+import styles from './HomePage.module.css';
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center">
+    <main className={styles.page}>
       <Game />
     </main>
   );

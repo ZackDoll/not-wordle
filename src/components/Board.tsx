@@ -1,5 +1,6 @@
 import type { BoardState } from '@/types/game';
 import Tile from './Tile';
+import styles from './Board.module.css';
 
 interface BoardProps {
   board: BoardState;
@@ -7,9 +8,9 @@ interface BoardProps {
 
 export default function Board({ board }: BoardProps) {
   return (
-    <div className="flex flex-col gap-1 sm:gap-1.5">
+    <div className={styles.board}>
       {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex gap-1 sm:gap-1.5">
+        <div key={rowIndex} className={styles.row}>
           {row.map((tile, colIndex) => (
             <Tile key={colIndex} letter={tile.letter} state={tile.state} />
           ))}

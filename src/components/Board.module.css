@@ -1,0 +1,18 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .board { gap: 0.375rem; }
+}
+
+.row {
+  display: flex;
+  gap: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .row { gap: 0.375rem; }
+}
