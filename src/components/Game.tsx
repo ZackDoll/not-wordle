@@ -7,6 +7,34 @@ import Keyboard from './Keyboard';
 
 const ROWS = 6;
 const COLS = 5;
+const TARGET = 'VALID'.split('');
+
+function scoreGuess(guess: string[]): import('@/types/game').TileState[] {
+  const result: import('@/types/game').TileState[] = Array(COLS).fill('absent');
+  const remaining = TARGET.reduce<Record<string, number>>((acc, l) => {
+    acc[l] = (acc[l] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  // first pass: correct positions
+  for (let i = 0; i < COLS; i++) {
+    if (guess[i] === TARGET[i]) {
+      result[i] = 'correct';
+      remaining[guess[i]]--;
+    }
+  }
+
+  // second pass: present but wrong position
+  for (let i = 0; i < COLS; i++) {
+    if (result[i] === 'correct') continue;
+    if ((remaining[guess[i]] ?? 0) > 0) {
+      result[i] = 'present';
+      remaining[guess[i]]--;
+    }
+  }
+
+  return result;
+}
 
 const emptyBoard = (): BoardState =>
   Array.from({ length: ROWS }, () =>
@@ -24,6 +52,15 @@ export default function Game() {
 
       if (key === 'ENTER') {
         if (currentCol < COLS) return;
+        const guess = board[currentRow].map(t => t.letter);
+        const states = scoreGuess(guess);
+        setBoard(prev => {
+          const next = prev.map(r => r.map(t => ({ ...t })));
+          states.forEach((state, i) => {
+            next[currentRow][i] = { letter: guess[i], state };
+          });
+          return next;
+        });
         setCurrentRow(r => r + 1);
         setCurrentCol(0);
         return;
