@@ -1,5 +1,6 @@
 import type { BoardState } from '@/types/game';
 import Board from './Board';
+import Keyboard from './Keyboard';
 
 const ROWS = 6;
 const COLS = 5;
@@ -15,6 +16,7 @@ export default function Game() {
   return (
     <div className="flex flex-col items-center gap-6 py-8">
       <Board board={board} />
+      <Keyboard />
     </div>
   );
 }
