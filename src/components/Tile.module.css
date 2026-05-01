@@ -45,3 +45,29 @@
   background: var(--tile-absent-bg);
   color: white;
 }
+
+@keyframes tile-flip {
+  0% {
+    transform: scaleY(1);
+    background: transparent;
+    border-color: var(--tile-filled-border);
+    color: var(--foreground);
+    animation-timing-function: ease-in;
+  }
+  49.9% {
+    background: transparent;
+    border-color: var(--tile-filled-border);
+    color: transparent;
+  }
+  50% {
+    transform: scaleY(0);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.flipping {
+  animation: tile-flip 400ms forwards;
+}

@@ -33,6 +33,13 @@
   color: #22c55e;
 }
 
+.wordLost {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #ef4444;
+}
+
 .subtext {
   font-size: 0.875rem;
   color: var(--muted);

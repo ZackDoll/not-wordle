@@ -1,2 +1,2 @@
-import HomePage from "@/pages/HomePage";
-export default HomePage;
+import StartPage from "@/pages/StartPage";
+export default StartPage;

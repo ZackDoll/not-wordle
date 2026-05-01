@@ -8,9 +8,12 @@ interface BoardProps {
   board: BoardState;
   shakingRow?: number | null;
   onShakeEnd?: () => void;
+  flippingRow?: number | null;
 }
 
-export default function Board({ board, shakingRow, onShakeEnd }: BoardProps) {
+const FLIP_STAGGER = 150;
+
+export default function Board({ board, shakingRow, onShakeEnd, flippingRow }: BoardProps) {
   return (
     <div className={styles.board}>
       {board.map((row, rowIndex) => (
@@ -20,7 +23,13 @@ export default function Board({ board, shakingRow, onShakeEnd }: BoardProps) {
           onAnimationEnd={rowIndex === shakingRow ? onShakeEnd : undefined}
         >
           {row.map((tile, colIndex) => (
-            <Tile key={colIndex} letter={tile.letter} state={tile.state} />
+            <Tile
+              key={colIndex}
+              letter={tile.letter}
+              state={tile.state}
+              flipping={rowIndex === flippingRow}
+              flipDelay={colIndex * FLIP_STAGGER}
+            />
           ))}
         </div>
       ))}

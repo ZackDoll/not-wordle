@@ -7,10 +7,14 @@ import { ordinal } from '@/utils/ordinal';
 import Board from './Board';
 import Keyboard from './Keyboard';
 import WinScreen from './WinScreen';
+import LoseScreen from './LoseScreen';
 import styles from './Game.module.css';
 
 const ROWS = 6;
 const COLS = 5;
+const FLIP_STAGGER = 150;
+const FLIP_DURATION = 400;
+const TOTAL_FLIP_MS = (COLS - 1) * FLIP_STAGGER + FLIP_DURATION;
 
 interface Constraints {
   positions: (string | null)[];
@@ -66,9 +70,12 @@ export default function Game() {
   const [currentRow, setCurrentRow] = useState(0);
   const [currentCol, setCurrentCol] = useState(0);
   const [won, setWon] = useState(false);
+  const [lost, setLost] = useState(false);
   const [guessCount, setGuessCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [shakingRow, setShakingRow] = useState<number | null>(null);
+  const [flippingRow, setFlippingRow] = useState<number | null>(null);
+  const isFlippingRef = useRef(false);
   const constraintsRef = useRef<Constraints>({
     positions: Array(COLS).fill(null),
     letters: new Set<string>(),
@@ -98,7 +105,7 @@ export default function Game() {
 
   const handleKey = useCallback(
     (key: string) => {
-      if (won || currentRow >= ROWS) return;
+      if (isFlippingRef.current || won || currentRow >= ROWS) return;
 
       if (key === 'ENTER') {
         if (currentCol < COLS || target.length === 0) return;
@@ -129,12 +136,23 @@ export default function Game() {
           if (s === 'present') constraintsRef.current.letters.add(guess[i]);
         });
 
-        if (states.every(s => s === 'correct')) {
-          setGuessCount(currentRow + 1);
-          setWon(true);
-        }
-        setCurrentRow(r => r + 1);
-        setCurrentCol(0);
+        const rowJustScored = currentRow;
+        const didWin = states.every(s => s === 'correct');
+        isFlippingRef.current = true;
+        setFlippingRow(rowJustScored);
+
+        setTimeout(() => {
+          isFlippingRef.current = false;
+          setFlippingRow(null);
+          if (didWin) {
+            setGuessCount(rowJustScored + 1);
+            setWon(true);
+          } else if (rowJustScored === ROWS - 1) {
+            setLost(true);
+          }
+          setCurrentRow(rowJustScored + 1);
+          setCurrentCol(0);
+        }, TOTAL_FLIP_MS);
         return;
       }
 
@@ -175,13 +193,19 @@ export default function Game() {
   return (
     <div className={styles.game}>
       {error && <div className={styles.error}>{error}</div>}
-      <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} />
+      <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
       <Keyboard onKey={handleKey} />
       {won && (
         <WinScreen
           word={target.join('')}
           guesses={guessCount}
           onDismiss={() => setWon(false)}
+        />
+      )}
+      {lost && (
+        <LoseScreen
+          word={target.join('')}
+          onDismiss={() => setLost(false)}
         />
       )}
     </div>
