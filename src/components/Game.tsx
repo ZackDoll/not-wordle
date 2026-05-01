@@ -68,6 +68,7 @@ export default function Game() {
   const [won, setWon] = useState(false);
   const [guessCount, setGuessCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [shakingRow, setShakingRow] = useState<number | null>(null);
   const constraintsRef = useRef<Constraints>({
     positions: Array(COLS).fill(null),
     letters: new Set<string>(),
@@ -105,12 +106,13 @@ export default function Game() {
 
         if (wordSetRef.current.size > 0 && !wordSetRef.current.has(guess.join(''))) {
           setError('Not in word list');
+          setShakingRow(currentRow);
           return;
         }
 
         if (hardMode) {
           const msg = validateHardMode(guess, constraintsRef.current);
-          if (msg) { setError(msg); return; }
+          if (msg) { setError(msg); setShakingRow(currentRow); return; }
         }
 
         const states = scoreGuess(guess, target);
@@ -173,7 +175,7 @@ export default function Game() {
   return (
     <div className={styles.game}>
       {error && <div className={styles.error}>{error}</div>}
-      <Board board={board} />
+      <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} />
       <Keyboard onKey={handleKey} />
       {won && (
         <WinScreen
