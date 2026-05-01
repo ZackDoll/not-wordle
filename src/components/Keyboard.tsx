@@ -25,10 +25,16 @@ function BackspaceIcon() {
   );
 }
 
-function Key({ label }: { label: string }) {
+interface KeyProps {
+  label: string;
+  onKey: (key: string) => void;
+}
+
+function Key({ label, onKey }: KeyProps) {
   const isWide = label === 'ENTER' || label === 'BACK';
   return (
     <button
+      onClick={() => onKey(label)}
       className={cn(
         'flex items-center justify-center rounded font-bold uppercase',
         'h-12 sm:h-14',
@@ -41,13 +47,17 @@ function Key({ label }: { label: string }) {
   );
 }
 
-export default function Keyboard() {
+interface KeyboardProps {
+  onKey: (key: string) => void;
+}
+
+export default function Keyboard({ onKey }: KeyboardProps) {
   return (
     <div className="flex w-[340px] sm:w-[400px] lg:w-[444px] flex-col gap-1 sm:gap-1.5">
       {ROWS.map((row, i) => (
         <div key={i} className="flex gap-1 sm:gap-1.5">
           {row.map((key) => (
-            <Key key={key} label={key} />
+            <Key key={key} label={key} onKey={onKey} />
           ))}
         </div>
       ))}
