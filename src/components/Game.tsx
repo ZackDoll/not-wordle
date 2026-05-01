@@ -72,11 +72,21 @@ export default function Game() {
     positions: Array(COLS).fill(null),
     letters: new Set<string>(),
   });
+  const wordSetRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     fetch('/api/word')
       .then(r => r.json())
       .then(({ word }: { word: string }) => setTarget(word.split('')));
+  }, []);
+
+  useEffect(() => {
+    fetch('/valid_words.txt')
+      .then(r => r.text())
+      .then(text => {
+        const words = text.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
+        wordSetRef.current = new Set(words);
+      });
   }, []);
 
   useEffect(() => {
@@ -92,6 +102,11 @@ export default function Game() {
       if (key === 'ENTER') {
         if (currentCol < COLS || target.length === 0) return;
         const guess = board[currentRow].map(t => t.letter);
+
+        if (wordSetRef.current.size > 0 && !wordSetRef.current.has(guess.join(''))) {
+          setError('Not in word list');
+          return;
+        }
 
         if (hardMode) {
           const msg = validateHardMode(guess, constraintsRef.current);
