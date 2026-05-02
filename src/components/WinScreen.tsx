@@ -33,7 +33,7 @@ export default function WinScreen({ word, guesses, board, definition, stats, ela
   const [copied, setCopied] = useState(false);
 
   async function handleShare() {
-    const text = buildShareText(board, guesses, colorBlind);
+    const text = buildShareText(board, guesses, colorBlind, elapsedMs);
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

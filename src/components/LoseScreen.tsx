@@ -30,7 +30,7 @@ export default function LoseScreen({ word, board, definition, stats, elapsedMs, 
   const [copied, setCopied] = useState(false);
 
   async function handleShare() {
-    const text = buildShareText(board, null, colorBlind);
+    const text = buildShareText(board, null, colorBlind, elapsedMs);
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
