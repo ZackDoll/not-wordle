@@ -1,3 +1,4 @@
+import type { TileState } from '@/types/game';
 import styles from './Keyboard.module.css';
 
 const ROWS = [
@@ -27,15 +28,17 @@ function BackspaceIcon() {
 
 interface KeyProps {
   label: string;
+  state?: TileState;
   onKey: (key: string) => void;
 }
 
-function Key({ label, onKey }: KeyProps) {
+function Key({ label, state, onKey }: KeyProps) {
   const isWide = label === 'ENTER' || label === 'BACK';
+  const stateClass = state && styles[state] ? ` ${styles[state]}` : '';
   return (
     <button
       onClick={() => onKey(label)}
-      className={isWide ? `${styles.key} ${styles.wide}` : styles.key}
+      className={`${styles.key}${isWide ? ` ${styles.wide}` : ''}${stateClass}`}
     >
       {label === 'BACK' ? <BackspaceIcon /> : label}
     </button>
@@ -44,15 +47,16 @@ function Key({ label, onKey }: KeyProps) {
 
 interface KeyboardProps {
   onKey: (key: string) => void;
+  letterStates: Record<string, TileState>;
 }
 
-export default function Keyboard({ onKey }: KeyboardProps) {
+export default function Keyboard({ onKey, letterStates }: KeyboardProps) {
   return (
     <div className={styles.keyboard}>
       {ROWS.map((row, i) => (
         <div key={i} className={styles.row}>
           {row.map((key) => (
-            <Key key={key} label={key} onKey={onKey} />
+            <Key key={key} label={key} state={letterStates[key]} onKey={onKey} />
           ))}
         </div>
       ))}

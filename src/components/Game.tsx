@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BoardState, TileState } from '@/types/game';
 import { useSettings } from '@/context/SettingsContext';
 import { ordinal } from '@/utils/ordinal';
@@ -86,6 +86,20 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
     letters: new Set<string>(),
   });
   const wordSetRef = useRef<Set<string>>(new Set());
+
+  const letterStates = useMemo(() => {
+    const rank: Record<TileState, number> = { correct: 2, present: 1, absent: 0, filled: -1, empty: -1 };
+    const result: Record<string, TileState> = {};
+    for (const row of board) {
+      for (const tile of row) {
+        if (tile.state === 'empty' || tile.state === 'filled') continue;
+        if (result[tile.letter] === undefined || rank[tile.state] > rank[result[tile.letter]]) {
+          result[tile.letter] = tile.state;
+        }
+      }
+    }
+    return result;
+  }, [board]);
 
   useEffect(() => {
     if (initialWord) {
@@ -203,7 +217,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
     <div className={styles.game}>
       {error && <div className={styles.error}>{error}</div>}
       <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
-      <Keyboard onKey={handleKey} />
+      <Keyboard onKey={handleKey} letterStates={letterStates} />
       {won && (
         <WinScreen
           word={target.join('')}

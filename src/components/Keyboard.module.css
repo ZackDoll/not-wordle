@@ -41,6 +41,10 @@
 
 .key:hover { opacity: 0.8; }
 
+.correct { background: var(--tile-correct-bg); color: white; }
+.present { background: var(--tile-present-bg); color: white; }
+.absent  { background: #111; color: white; }
+
 @media (min-width: 640px) {
   .key { height: 3.5rem; font-size: 1rem; }
 }
