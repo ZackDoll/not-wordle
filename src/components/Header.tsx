@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { useSettings } from '@/context/SettingsContext';
 import Settings from './Settings';
 import styles from './Header.module.css';
@@ -14,13 +15,28 @@ function GearIcon() {
   );
 }
 
+function BackIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={styles.icon}>
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  );
+}
+
 export default function Header() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { darkMode, hardMode, colorBlind, setDarkMode, setHardMode, setColorBlind } = useSettings();
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
 
   return (
     <>
       <header className={styles.header}>
+        {!isHome && (
+          <Link to="/" className={styles.backBtn} aria-label="back to home">
+            <BackIcon />
+          </Link>
+        )}
         <span className={styles.title}>Wordlen't</span>
         <button onClick={() => setSettingsOpen(true)} className={styles.settingsBtn} aria-label="open settings">
           <GearIcon />
