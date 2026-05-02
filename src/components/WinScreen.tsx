@@ -14,7 +14,7 @@ interface WinScreenProps {
   word: string;
   guesses: number;
   board: BoardState;
-  definition: Definition | null;
+  definition: Definition | null | 'not-found';
   stats?: Stats;
   onDismiss: () => void;
   onPlayAgain?: () => void;

@@ -32,13 +32,13 @@ export default function LeaderboardPage() {
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.heading}>today&apos;s leaderboard</h1>
+      <h1 className={styles.heading}>Today&apos;s Leaderboard</h1>
       <p className={styles.date}>{date}</p>
 
       {loading ? (
         <p className={styles.empty}>loading...</p>
       ) : entries.length === 0 ? (
-        <p className={styles.empty}>no results yet — be the first to play!</p>
+        <p className={styles.empty}>No results yet, be the first to play!</p>
       ) : (
         <div className={styles.table}>
           <div className={styles.headerRow}>
@@ -62,7 +62,7 @@ export default function LeaderboardPage() {
       )}
 
       {!user && (
-        <p className={styles.hint}>sign in to appear on the leaderboard</p>
+        <p className={styles.hint}>Sign in to appear on the leaderboard</p>
       )}
     </main>
   );

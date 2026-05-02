@@ -1,8 +1,11 @@
 import type { Definition } from '@/utils/dictionary';
 import styles from './WordDefinition.module.css';
 
-export default function WordDefinition({ definition }: { definition: Definition | null }) {
+export default function WordDefinition({ definition }: { definition: Definition | null | 'not-found' }) {
   if (!definition) return null;
+  if (definition === 'not-found') {
+    return <p className={styles.notFound}>this word exists in wordle&apos;s vocabulary but has no entry in the dictionary api</p>;
+  }
 
   return (
     <div className={styles.container}>

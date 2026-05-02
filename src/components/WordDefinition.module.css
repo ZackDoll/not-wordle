@@ -26,3 +26,11 @@
   color: var(--foreground);
   line-height: 1.5;
 }
+
+.notFound {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+  max-width: 16rem;
+}

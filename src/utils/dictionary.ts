@@ -4,9 +4,10 @@ export interface Definition {
   definition: string;
 }
 
-export async function fetchDefinition(word: string): Promise<Definition | null> {
+export async function fetchDefinition(word: string): Promise<Definition | null | 'not-found'> {
   try {
     const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`);
+    if (res.status === 404) return 'not-found';
     if (!res.ok) return null;
     const data = await res.json();
     const entry = data[0];

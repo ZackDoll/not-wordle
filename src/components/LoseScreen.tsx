@@ -13,7 +13,7 @@ import styles from './WinScreen.module.css';
 interface LoseScreenProps {
   word: string;
   board: BoardState;
-  definition: Definition | null;
+  definition: Definition | null | 'not-found';
   stats?: Stats;
   onDismiss: () => void;
   onPlayAgain?: () => void;

@@ -118,7 +118,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
     letters: new Set<string>(),
   });
   const wordSetRef = useRef<Set<string>>(new Set());
-  const [definition, setDefinition] = useState<Definition | null>(null);
+  const [definition, setDefinition] = useState<Definition | null | 'not-found'>(null);
   const [gameStats, setGameStats] = useState<Stats | null>(null);
   const [showIntro, setShowIntro] = useState(false);
   const [ready, setReady] = useState<boolean>(() => {
