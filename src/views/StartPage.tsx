@@ -71,7 +71,10 @@ export default function StartPage() {
         {TITLE_TILES.map(({ letter, state }, i) => (
           <Fragment key={i}>
             {i === 7 && <span className={styles.apostrophe}>&apos;</span>}
-            <div className={`${styles.tile} ${styles[state]}`}>{letter}</div>
+            <div
+              className={`${styles.tile} ${styles[state]}`}
+              style={{ animationDelay: `${1 + i * 0.1}s` }}
+            >{letter}</div>
           </Fragment>
         ))}
       </div>
