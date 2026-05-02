@@ -21,7 +21,7 @@ const modes = [
     description: 'Pick your own word and send the link to a friend.',
     btn: 'Create',
     to: '/custom',
-    available: false,
+    available: true,
   },
 ];
 

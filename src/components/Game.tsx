@@ -63,7 +63,11 @@ const emptyBoard = (): BoardState =>
     Array.from({ length: COLS }, () => ({ letter: '', state: 'empty' as const }))
   );
 
-export default function Game() {
+interface GameProps {
+  initialWord?: string;
+}
+
+export default function Game({ initialWord }: GameProps = {}) {
   const { hardMode } = useSettings();
   const [target, setTarget] = useState<string[]>([]);
   const [board, setBoard] = useState<BoardState>(emptyBoard());
@@ -83,10 +87,14 @@ export default function Game() {
   const wordSetRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    if (initialWord) {
+      setTarget(initialWord.toUpperCase().split(''));
+      return;
+    }
     fetch('/api/word')
       .then(r => r.json())
       .then(({ word }: { word: string }) => setTarget(word.split('')));
-  }, []);
+  }, [initialWord]);
 
   useEffect(() => {
     fetch('/valid_words.txt')
