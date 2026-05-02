@@ -6,7 +6,7 @@ export interface Definition {
 
 export async function fetchDefinition(word: string): Promise<Definition | null | 'not-found'> {
   try {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`);
+    const res = await fetch(`/api/definition/${word.toLowerCase()}`);
     if (res.status === 404) return 'not-found';
     if (!res.ok) return null;
     const data = await res.json();
