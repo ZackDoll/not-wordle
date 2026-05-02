@@ -2,11 +2,11 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from '@/components/Header';
-import StartPage from '@/pages/StartPage';
-import HomePage from '@/pages/HomePage';
-import CustomSetupPage from '@/pages/CustomSetupPage';
-import CustomGamePage from '@/pages/CustomGamePage';
-import QuickPlayPage from '@/pages/QuickPlayPage';
+import StartPage from '@/views/StartPage';
+import HomePage from '@/views/HomePage';
+import CustomSetupPage from '@/views/CustomSetupPage';
+import CustomGamePage from '@/views/CustomGamePage';
+import QuickPlayPage from '@/views/QuickPlayPage';
 
 export default function RouterApp() {
   return (
