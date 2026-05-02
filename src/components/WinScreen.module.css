@@ -76,3 +76,19 @@
 }
 
 .btnSecondary:hover { color: var(--foreground); }
+
+.leaderboardPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  width: 100%;
+}
+
+.leaderboardHint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}

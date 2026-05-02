@@ -17,6 +17,8 @@ interface WinScreenProps {
   definition: Definition | null | 'not-found';
   stats?: Stats;
   elapsedMs?: number;
+  showLeaderboardSignIn?: boolean;
+  onRequestSignIn?: () => void;
   onDismiss: () => void;
   onPlayAgain?: () => void;
 }
@@ -26,7 +28,7 @@ function formatTime(ms: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
-export default function WinScreen({ word, guesses, board, definition, stats, elapsedMs, onDismiss, onPlayAgain }: WinScreenProps) {
+export default function WinScreen({ word, guesses, board, definition, stats, elapsedMs, showLeaderboardSignIn, onRequestSignIn, onDismiss, onPlayAgain }: WinScreenProps) {
   const { colorBlind } = useSettings();
   const [copied, setCopied] = useState(false);
 
@@ -51,6 +53,12 @@ export default function WinScreen({ word, guesses, board, definition, stats, ela
         {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>Play Again</button>}
         <button onClick={handleShare} className={styles.btn}>{copied ? 'Copied!' : 'Share'}</button>
         <button onClick={onDismiss} className={styles.btnSecondary}>See Board</button>
+        {showLeaderboardSignIn && onRequestSignIn && (
+          <div className={styles.leaderboardPrompt}>
+            <p className={styles.leaderboardHint}>Sign in to appear on today&apos;s leaderboard</p>
+            <button onClick={onRequestSignIn} className={styles.btn}>Sign In</button>
+          </div>
+        )}
       </div>
     </div>
   );

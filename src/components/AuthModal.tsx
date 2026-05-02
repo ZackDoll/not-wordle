@@ -23,7 +23,7 @@ export default function AuthModal({ onDismiss }: { onDismiss: () => void }) {
     <div className={styles.backdrop} onClick={onDismiss}>
       <div className={styles.card} onClick={e => e.stopPropagation()}>
         <h2 className={styles.heading}>Sign In/Sign Up</h2>
-        <p className={styles.sub}>Your stats will be saved and you can appear on the leaderboard</p>
+        <p className={styles.sub}>Sign in to appear on the leaderboard</p>
         {error && <p className={styles.error}>{error}</p>}
         <div className={styles.btnWrap}>
           <GoogleLogin

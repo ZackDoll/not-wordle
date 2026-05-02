@@ -15,6 +15,7 @@ import HowToPlay from './HowToPlay';
 import WinScreen from './WinScreen';
 import LoseScreen from './LoseScreen';
 import ReadyScreen from './ReadyScreen';
+import AuthModal from './AuthModal';
 import styles from './Game.module.css';
 
 const ROWS = 6;
@@ -138,6 +139,18 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
       return true;
     }
   });
+
+  // Pending leaderboard result for unauthenticated wins
+  const [pendingResult, setPendingResult] = useState<{ guesses: number; solved: boolean; timeSecs?: number; date: string } | null>(null);
+  const [showAuthForLeaderboard, setShowAuthForLeaderboard] = useState(false);
+
+  // Submit pending result when user signs in
+  useEffect(() => {
+    if (token && pendingResult) {
+      submitResult(token, pendingResult.guesses, pendingResult.solved, pendingResult.timeSecs);
+      setPendingResult(null);
+    }
+  }, [token, pendingResult]);
 
   // Timer state
   const [playerReady, setPlayerReady] = useState(false);
@@ -312,7 +325,12 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
             setWon(true);
             if (!initialWord) {
               setGameStats(recordResult(true, rowJustScored + 1, timeSecs));
-              if (token) submitResult(token, rowJustScored + 1, true, timeSecs);
+              if (token) {
+                submitResult(token, rowJustScored + 1, true, timeSecs);
+              } else {
+                const date = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+                setPendingResult({ guesses: rowJustScored + 1, solved: true, timeSecs, date });
+              }
             }
           } else if (rowJustScored === ROWS - 1) {
             setLost(true);
@@ -379,9 +397,14 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           definition={definition}
           stats={gameStats ?? undefined}
           elapsedMs={elapsedMs}
+          showLeaderboardSignIn={pendingResult !== null}
+          onRequestSignIn={() => setShowAuthForLeaderboard(true)}
           onDismiss={() => setWon(false)}
           onPlayAgain={onPlayAgain}
         />
+      )}
+      {showAuthForLeaderboard && (
+        <AuthModal onDismiss={() => setShowAuthForLeaderboard(false)} />
       )}
       {lost && (
         <LoseScreen
