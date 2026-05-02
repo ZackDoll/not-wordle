@@ -1,0 +1,136 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  padding: 2rem;
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  max-width: 22rem;
+  width: 90%;
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.rule {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.rules {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-self: stretch;
+}
+
+.divider {
+  width: 100%;
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.25rem 0;
+}
+
+.examplesLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  align-self: flex-start;
+}
+
+.examples {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-self: stretch;
+}
+
+.example {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tiles {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 2px solid transparent;
+}
+
+.empty {
+  border-color: var(--tile-empty-border);
+  color: var(--foreground);
+}
+
+.correct {
+  background: var(--tile-correct-bg);
+  border-color: var(--tile-correct-bg);
+  color: white;
+}
+
+.present {
+  background: var(--tile-present-bg);
+  border-color: var(--tile-present-bg);
+  color: white;
+}
+
+.absent {
+  background: #111;
+  border-color: #111;
+  color: white;
+}
+
+.exampleLabel {
+  font-size: 0.85rem;
+}
+
+.exampleLabel strong {
+  font-weight: 700;
+}
+
+.btn {
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn:hover { opacity: 0.8; }

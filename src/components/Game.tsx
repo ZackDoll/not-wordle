@@ -8,6 +8,7 @@ import type { Definition } from '@/utils/dictionary';
 import { fetchDefinition } from '@/utils/dictionary';
 import Board from './Board';
 import Keyboard from './Keyboard';
+import HowToPlay from './HowToPlay';
 import WinScreen from './WinScreen';
 import LoseScreen from './LoseScreen';
 import styles from './Game.module.css';
@@ -89,6 +90,16 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
   });
   const wordSetRef = useRef<Set<string>>(new Set());
   const [definition, setDefinition] = useState<Definition | null>(null);
+  const [showIntro, setShowIntro] = useState(false);
+
+  useEffect(() => {
+    if (!localStorage.getItem('wordle-seen-intro')) setShowIntro(true);
+  }, []);
+
+  function dismissIntro() {
+    localStorage.setItem('wordle-seen-intro', '1');
+    setShowIntro(false);
+  }
 
   const letterStates = useMemo(() => {
     const rank: Record<TileState, number> = { correct: 2, present: 1, absent: 0, filled: -1, empty: -1 };
@@ -222,6 +233,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
 
   return (
     <div className={styles.game}>
+      {showIntro && <HowToPlay onDismiss={dismissIntro} />}
       {error && <div className={styles.error}>{error}</div>}
       <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
       <Keyboard onKey={handleKey} letterStates={letterStates} />
