@@ -247,6 +247,11 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
       // Skip the ready screen for restored sessions — timer would be meaningless mid-game
       playerReadyRef.current = true;
       setPlayerReady(true);
+      // Always set pendingResult for restored wins so the sign-in prompt persists across reloads.
+      // If already signed in, the retroactive submission fires immediately and gets a silent 409.
+      if (isWon) {
+        setPendingResult({ guesses: saved.guessCount, solved: true, date: saved.date, timeSecs: undefined });
+      }
     } catch {}
     setReady(true);
   }, [target, initialWord]);
@@ -397,7 +402,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           definition={definition}
           stats={gameStats ?? undefined}
           elapsedMs={elapsedMs}
-          showLeaderboardSignIn={pendingResult !== null}
+          showLeaderboardSignIn={pendingResult !== null && !token}
           onRequestSignIn={() => setShowAuthForLeaderboard(true)}
           onDismiss={() => setWon(false)}
           onPlayAgain={onPlayAgain}
