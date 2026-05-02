@@ -198,9 +198,9 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
     }
     fetch('/api/word')
       .then(r => r.json())
-      .then(({ word }: { word: string }) => {
+      .then(({ word, definition }: { word: string; definition: Definition | null | 'not-found' }) => {
         setTarget(word.split(''));
-        fetchDefinition(word).then(setDefinition);
+        setDefinition(definition ?? null);
       });
   }, [initialWord]);
 

@@ -14,16 +14,41 @@ function dayIndex(): number {
   return ((dayNum * 1664525 + 1013904223) >>> 0);
 }
 
-const getDailyWord = unstable_cache(
+async function fetchDefinition(word: string) {
+  try {
+    const res = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`,
+      { next: { revalidate: 86400 } }
+    );
+    if (res.status === 404) return 'not-found' as const;
+    if (!res.ok) return null;
+    const data = await res.json();
+    const entry = data[0];
+    const meaning = entry?.meanings?.[0];
+    const def = meaning?.definitions?.[0]?.definition;
+    if (!def) return null;
+    return {
+      phonetic: entry?.phonetic as string | undefined,
+      partOfSpeech: meaning?.partOfSpeech as string,
+      definition: def as string,
+    };
+  } catch {
+    return null;
+  }
+}
+
+const getDailyWordWithDefinition = unstable_cache(
   async () => {
     const words = loadWords();
-    return words[dayIndex() % words.length];
+    const word = words[dayIndex() % words.length];
+    const definition = await fetchDefinition(word);
+    return { word, definition };
   },
   ['daily-word'],
   { revalidate: 86400 }
 );
 
 export async function GET() {
-  const word = await getDailyWord();
-  return NextResponse.json({ word });
+  const { word, definition } = await getDailyWordWithDefinition();
+  return NextResponse.json({ word, definition });
 }
