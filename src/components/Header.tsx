@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useSettings } from '@/context/SettingsContext';
 import { useAuth } from '@/context/AuthContext';
@@ -50,10 +50,23 @@ export default function Header() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const { darkMode, hardMode, colorBlind, setDarkMode, setHardMode, setColorBlind } = useSettings();
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const isHome = pathname === '/';
+
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [userMenuOpen]);
 
   return (
     <>
@@ -69,9 +82,26 @@ export default function Header() {
             <BarChartIcon />
           </button>
           {user ? (
-            <button onClick={logout} className={styles.userBtn} aria-label="log out" title="click to log out">
-              {user.username}
-            </button>
+            <div className={styles.userMenu} ref={userMenuRef}>
+              <button
+                onClick={() => setUserMenuOpen(o => !o)}
+                className={styles.userBtn}
+                aria-label="account menu"
+              >
+                {user.username}
+              </button>
+              {userMenuOpen && (
+                <div className={styles.dropdown}>
+                  <span className={styles.dropdownEmail}>{user.email}</span>
+                  <button
+                    className={styles.dropdownLogout}
+                    onClick={() => { logout(); setUserMenuOpen(false); }}
+                  >
+                    log out
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <button onClick={() => setAuthOpen(true)} className={styles.iconBtn} aria-label="sign in">
               <PersonIcon />

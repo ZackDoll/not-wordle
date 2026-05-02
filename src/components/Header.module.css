@@ -65,4 +65,47 @@
 
 .userBtn:hover { color: var(--foreground); }
 
+.userMenu {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 16px rgb(0 0 0 / 0.15);
+  display: flex;
+  flex-direction: column;
+  min-width: 10rem;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.dropdownEmail {
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownLogout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ef4444;
+  transition: background 0.15s;
+}
+
+.dropdownLogout:hover { background: var(--border); }
+
 .icon { height: 1.25rem; width: 1.25rem; }
