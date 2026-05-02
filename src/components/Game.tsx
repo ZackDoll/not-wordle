@@ -108,6 +108,17 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
   const [definition, setDefinition] = useState<Definition | null>(null);
   const [gameStats, setGameStats] = useState<Stats | null>(null);
   const [showIntro, setShowIntro] = useState(false);
+  const [ready, setReady] = useState<boolean>(() => {
+    if (initialWord) return true;
+    try {
+      const raw = localStorage.getItem(DAILY_STATE_KEY);
+      if (!raw) return true;
+      const saved = JSON.parse(raw) as { date?: string };
+      return saved.date !== todayStr();
+    } catch {
+      return true;
+    }
+  });
 
   useEffect(() => {
     if (!localStorage.getItem('wordle-seen-intro')) setShowIntro(true);
@@ -187,6 +198,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
       }
       constraintsRef.current = { positions, letters };
     } catch {}
+    setReady(true);
   }, [target, initialWord]);
 
   useEffect(() => {
@@ -288,7 +300,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
   }, [handleKey]);
 
   return (
-    <div className={styles.game}>
+    <div className={styles.game} style={ready ? undefined : { visibility: 'hidden' }}>
       {showIntro && <HowToPlay onDismiss={dismissIntro} />}
       {error && <div className={styles.error}>{error}</div>}
       <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
