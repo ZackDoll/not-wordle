@@ -222,7 +222,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
       });
       setCurrentCol(c => c + 1);
     },
-    [won, currentRow, currentCol, board, target, hardMode]
+    [won, currentRow, currentCol, board, target, hardMode, initialWord]
   );
 
   useEffect(() => {

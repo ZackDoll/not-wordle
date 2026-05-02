@@ -50,7 +50,7 @@ export default function Header() {
             <BackIcon />
           </Link>
         )}
-        <span className={styles.title}>Wordlen't</span>
+        <span className={styles.title}>Wordlen&apos;t</span>
         <div className={styles.rightBtns}>
           <button onClick={() => setStatsOpen(true)} className={styles.iconBtn} aria-label="view statistics">
             <BarChartIcon />
