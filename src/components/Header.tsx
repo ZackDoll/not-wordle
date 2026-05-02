@@ -83,9 +83,11 @@ export default function Header() {
         <div className={styles.rightBtns}>
           <Link to="/leaderboard" className={styles.iconBtn} aria-label="leaderboard">
             <TrophyIcon />
+            <span className={styles.iconLabel}>leaderboard</span>
           </Link>
           <button onClick={() => setStatsOpen(true)} className={styles.iconBtn} aria-label="view statistics">
             <BarChartIcon />
+            <span className={styles.iconLabel}>stats</span>
           </button>
           {user ? (
             <div className={styles.userMenu} ref={userMenuRef}>
@@ -111,10 +113,12 @@ export default function Header() {
           ) : (
             <button onClick={() => setAuthOpen(true)} className={styles.iconBtn} aria-label="sign in">
               <PersonIcon />
+              <span className={styles.iconLabel}>sign in</span>
             </button>
           )}
           <button onClick={() => setSettingsOpen(true)} className={styles.iconBtn} aria-label="open settings">
             <GearIcon />
+            <span className={styles.iconLabel}>settings</span>
           </button>
         </div>
       </header>
