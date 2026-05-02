@@ -14,9 +14,30 @@
 }
 
 @keyframes tileFlipIn {
-  0% { transform: scaleY(1); }
-  50% { transform: scaleY(0); }
-  100% { transform: scaleY(1); }
+  0% {
+    transform: scaleY(1);
+    background: transparent;
+    border-color: var(--tile-empty-border);
+    color: var(--foreground);
+  }
+  50% {
+    transform: scaleY(0);
+    background: transparent;
+    border-color: var(--tile-empty-border);
+    color: var(--foreground);
+  }
+  51% {
+    transform: scaleY(0);
+    background: var(--tile-anim-bg);
+    border-color: var(--tile-anim-bg);
+    color: white;
+  }
+  100% {
+    transform: scaleY(1);
+    background: var(--tile-anim-bg);
+    border-color: var(--tile-anim-bg);
+    color: white;
+  }
 }
 
 .tile {
@@ -29,7 +50,7 @@
   font-weight: 700;
   border: 2px solid transparent;
   text-transform: uppercase;
-  animation: tileFlipIn 0.4s ease-in-out;
+  animation: tileFlipIn 0.4s ease-in-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -44,18 +65,21 @@
   background: var(--tile-correct-bg);
   border-color: var(--tile-correct-bg);
   color: white;
+  --tile-anim-bg: var(--tile-correct-bg);
 }
 
 .present {
   background: var(--tile-present-bg);
   border-color: var(--tile-present-bg);
   color: white;
+  --tile-anim-bg: var(--tile-present-bg);
 }
 
 .absent {
   background: var(--tile-absent-bg);
   border-color: var(--tile-absent-bg);
   color: white;
+  --tile-anim-bg: var(--tile-absent-bg);
 }
 
 .apostrophe {
