@@ -34,14 +34,14 @@ export default function WinScreen({ word, guesses, board, definition, stats, onD
   return (
     <div className={styles.backdrop}>
       <div className={styles.card}>
-        <h2 className={styles.heading}>you got it!</h2>
+        <h2 className={styles.heading}>You Got It!</h2>
         <p className={styles.word}>{word}</p>
         <WordDefinition definition={definition} />
-        <p className={styles.subtext}>solved in {guesses} / 6 {guesses === 1 ? 'guess' : 'guesses'}</p>
+        <p className={styles.subtext}>Solved in {guesses} / 6 {guesses === 1 ? 'guess' : 'guesses'}</p>
         {stats && <StatsDisplay stats={stats} highlight={guesses} />}
-        {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>play again</button>}
-        <button onClick={handleShare} className={styles.btn}>{copied ? 'copied!' : 'share'}</button>
-        <button onClick={onDismiss} className={styles.btnSecondary}>see board</button>
+        {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>Play Again</button>}
+        <button onClick={handleShare} className={styles.btn}>{copied ? 'Copied!' : 'Share'}</button>
+        <button onClick={onDismiss} className={styles.btnSecondary}>See Board</button>
       </div>
     </div>
   );

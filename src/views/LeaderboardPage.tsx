@@ -36,15 +36,15 @@ export default function LeaderboardPage() {
       <p className={styles.date}>{date}</p>
 
       {loading ? (
-        <p className={styles.empty}>loading...</p>
+        <p className={styles.empty}>Loading...</p>
       ) : entries.length === 0 ? (
         <p className={styles.empty}>No results yet, be the first to play!</p>
       ) : (
         <div className={styles.table}>
           <div className={styles.headerRow}>
             <span className={styles.colRank}>#</span>
-            <span className={styles.colName}>player</span>
-            <span className={styles.colGuesses}>guesses</span>
+            <span className={styles.colName}>Player</span>
+            <span className={styles.colGuesses}>Guesses</span>
           </div>
           {entries.map(entry => (
             <div

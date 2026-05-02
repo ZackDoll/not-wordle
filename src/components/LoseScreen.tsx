@@ -33,14 +33,14 @@ export default function LoseScreen({ word, board, definition, stats, onDismiss, 
   return (
     <div className={styles.backdrop}>
       <div className={styles.card}>
-        <h2 className={styles.heading}>better luck next time</h2>
+        <h2 className={styles.heading}>Better Luck Next Time</h2>
         <p className={styles.wordLost}>{word}</p>
         <WordDefinition definition={definition} />
-        <p className={styles.subtext}>the word was {word.toLowerCase()}</p>
+        <p className={styles.subtext}>The word was {word.toLowerCase()}</p>
         {stats && <StatsDisplay stats={stats} />}
-        {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>play again</button>}
-        <button onClick={handleShare} className={styles.btn}>{copied ? 'copied!' : 'share'}</button>
-        <button onClick={onDismiss} className={styles.btnSecondary}>see board</button>
+        {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>Play Again</button>}
+        <button onClick={handleShare} className={styles.btn}>{copied ? 'Copied!' : 'Share'}</button>
+        <button onClick={onDismiss} className={styles.btnSecondary}>See Board</button>
       </div>
     </div>
   );

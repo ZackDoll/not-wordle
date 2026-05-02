@@ -105,7 +105,7 @@ export default function Header() {
                     className={styles.dropdownLogout}
                     onClick={() => { logout(); setUserMenuOpen(false); }}
                   >
-                    log out
+                    Log Out
                   </button>
                 </div>
               )}

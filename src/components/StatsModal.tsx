@@ -18,7 +18,7 @@ export default function StatsModal({ onDismiss }: { onDismiss: () => void }) {
       <div className={styles.card} onClick={e => e.stopPropagation()}>
         <h2 className={styles.heading}>Statistics</h2>
         {stats && <StatsDisplay stats={stats} />}
-        <button className={styles.btnSecondary} onClick={onDismiss}>close</button>
+        <button className={styles.btnSecondary} onClick={onDismiss}>Close</button>
       </div>
     </div>
   );
