@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  max-width: 18rem;
+  text-align: center;
+}
+
+.phonetic {
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.partOfSpeech {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.definition {
+  font-size: 0.875rem;
+  color: var(--foreground);
+  line-height: 1.5;
+}

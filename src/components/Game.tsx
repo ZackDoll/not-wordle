@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BoardState, TileState } from '@/types/game';
 import { useSettings } from '@/context/SettingsContext';
 import { ordinal } from '@/utils/ordinal';
+import type { Definition } from '@/utils/dictionary';
+import { fetchDefinition } from '@/utils/dictionary';
 import Board from './Board';
 import Keyboard from './Keyboard';
 import WinScreen from './WinScreen';
@@ -86,6 +88,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
     letters: new Set<string>(),
   });
   const wordSetRef = useRef<Set<string>>(new Set());
+  const [definition, setDefinition] = useState<Definition | null>(null);
 
   const letterStates = useMemo(() => {
     const rank: Record<TileState, number> = { correct: 2, present: 1, absent: 0, filled: -1, empty: -1 };
@@ -104,11 +107,15 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
   useEffect(() => {
     if (initialWord) {
       setTarget(initialWord.toUpperCase().split(''));
+      fetchDefinition(initialWord).then(setDefinition);
       return;
     }
     fetch('/api/word')
       .then(r => r.json())
-      .then(({ word }: { word: string }) => setTarget(word.split('')));
+      .then(({ word }: { word: string }) => {
+        setTarget(word.split(''));
+        fetchDefinition(word).then(setDefinition);
+      });
   }, [initialWord]);
 
   useEffect(() => {
@@ -223,6 +230,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           word={target.join('')}
           guesses={guessCount}
           board={board}
+          definition={definition}
           onDismiss={() => setWon(false)}
           onPlayAgain={onPlayAgain}
         />
@@ -231,6 +239,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
         <LoseScreen
           word={target.join('')}
           board={board}
+          definition={definition}
           onDismiss={() => setLost(false)}
           onPlayAgain={onPlayAgain}
         />

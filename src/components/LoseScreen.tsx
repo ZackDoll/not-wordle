@@ -2,18 +2,21 @@
 
 import { useState } from 'react';
 import type { BoardState } from '@/types/game';
+import type { Definition } from '@/utils/dictionary';
 import { useSettings } from '@/context/SettingsContext';
 import { buildShareText } from '@/utils/shareResult';
+import WordDefinition from './WordDefinition';
 import styles from './WinScreen.module.css';
 
 interface LoseScreenProps {
   word: string;
   board: BoardState;
+  definition: Definition | null;
   onDismiss: () => void;
   onPlayAgain?: () => void;
 }
 
-export default function LoseScreen({ word, board, onDismiss, onPlayAgain }: LoseScreenProps) {
+export default function LoseScreen({ word, board, definition, onDismiss, onPlayAgain }: LoseScreenProps) {
   const { colorBlind } = useSettings();
   const [copied, setCopied] = useState(false);
 
@@ -29,6 +32,7 @@ export default function LoseScreen({ word, board, onDismiss, onPlayAgain }: Lose
       <div className={styles.card}>
         <h2 className={styles.heading}>better luck next time</h2>
         <p className={styles.wordLost}>{word}</p>
+        <WordDefinition definition={definition} />
         <p className={styles.subtext}>the word was {word.toLowerCase()}</p>
         {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>play again</button>}
         <button onClick={handleShare} className={styles.btn}>{copied ? 'copied!' : 'share'}</button>

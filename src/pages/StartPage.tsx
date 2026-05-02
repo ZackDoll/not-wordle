@@ -29,7 +29,8 @@ export default function StartPage() {
   return (
     <main className={styles.page}>
       <h1 className={styles.title}>Wordlen&apos;t</h1>
-      <p className={styles.subtitle}>Pick a mode</p>
+      <p className={styles.subtitle}>Legally speaking, this is not Wordle</p>
+      <p className={styles.subtitle}>(Why would you even assume that it is, it's nothing like Wordle)</p>
       <div className={styles.cards}>
         {modes.map(mode => (
           <div
