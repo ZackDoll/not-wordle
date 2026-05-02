@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BoardState, TileState } from '@/types/game';
 import { useSettings } from '@/context/SettingsContext';
+import { useAuth } from '@/context/AuthContext';
 import { ordinal } from '@/utils/ordinal';
 import type { Definition } from '@/utils/dictionary';
 import { fetchDefinition } from '@/utils/dictionary';
@@ -77,6 +78,17 @@ function validateHardMode(guess: string[], constraints: Constraints): string | n
   return null;
 }
 
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+
+function submitResult(token: string, guesses: number, solved: boolean) {
+  const date = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+  fetch(`${API}/results`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ date, guesses, solved }),
+  }).catch(() => {});
+}
+
 const emptyBoard = (): BoardState =>
   Array.from({ length: ROWS }, () =>
     Array.from({ length: COLS }, () => ({ letter: '', state: 'empty' as const }))
@@ -89,6 +101,7 @@ interface GameProps {
 
 export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
   const { hardMode } = useSettings();
+  const { token } = useAuth();
   const [target, setTarget] = useState<string[]>([]);
   const [board, setBoard] = useState<BoardState>(emptyBoard());
   const [currentRow, setCurrentRow] = useState(0);
@@ -254,10 +267,16 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           if (didWin) {
             setGuessCount(rowJustScored + 1);
             setWon(true);
-            if (!initialWord) setGameStats(recordResult(true, rowJustScored + 1));
+            if (!initialWord) {
+              setGameStats(recordResult(true, rowJustScored + 1));
+              if (token) submitResult(token, rowJustScored + 1, true);
+            }
           } else if (rowJustScored === ROWS - 1) {
             setLost(true);
-            if (!initialWord) setGameStats(recordResult(false, 0));
+            if (!initialWord) {
+              setGameStats(recordResult(false, 0));
+              if (token) submitResult(token, 0, false);
+            }
           }
           setCurrentRow(rowJustScored + 1);
           setCurrentCol(0);

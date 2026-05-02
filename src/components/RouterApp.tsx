@@ -9,6 +9,7 @@ import HomePage from '@/views/HomePage';
 import CustomSetupPage from '@/views/CustomSetupPage';
 import CustomGamePage from '@/views/CustomGamePage';
 import QuickPlayPage from '@/views/QuickPlayPage';
+import LeaderboardPage from '@/views/LeaderboardPage';
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '';
 
@@ -24,6 +25,7 @@ export default function RouterApp() {
           <Route path="/play" element={<QuickPlayPage />} />
           <Route path="/custom" element={<CustomSetupPage />} />
           <Route path="/custom/play/:encoded" element={<CustomGamePage />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
