@@ -8,17 +8,16 @@ function loadWords(): string[] {
   return text.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
 }
 
-function dateKey(): string {
-  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+function dayIndex(): number {
+  const pst = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+  const dayNum = Math.floor(new Date(pst).getTime() / 86400000);
+  return ((dayNum * 1664525 + 1013904223) >>> 0);
 }
 
 const getDailyWord = unstable_cache(
   async () => {
     const words = loadWords();
-    const key = dateKey();
-    let hash = 0;
-    for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
-    return words[hash % words.length];
+    return words[dayIndex() % words.length];
   },
   ['daily-word'],
   { revalidate: 86400 }
