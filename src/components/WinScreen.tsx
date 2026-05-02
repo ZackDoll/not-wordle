@@ -16,11 +16,17 @@ interface WinScreenProps {
   board: BoardState;
   definition: Definition | null | 'not-found';
   stats?: Stats;
+  elapsedMs?: number;
   onDismiss: () => void;
   onPlayAgain?: () => void;
 }
 
-export default function WinScreen({ word, guesses, board, definition, stats, onDismiss, onPlayAgain }: WinScreenProps) {
+function formatTime(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+export default function WinScreen({ word, guesses, board, definition, stats, elapsedMs, onDismiss, onPlayAgain }: WinScreenProps) {
   const { colorBlind } = useSettings();
   const [copied, setCopied] = useState(false);
 
@@ -38,6 +44,9 @@ export default function WinScreen({ word, guesses, board, definition, stats, onD
         <p className={styles.word}>{word}</p>
         <WordDefinition definition={definition} />
         <p className={styles.subtext}>Solved in {guesses} / 6 {guesses === 1 ? 'guess' : 'guesses'}</p>
+        {elapsedMs != null && elapsedMs > 0 && (
+          <p className={styles.subtext}>Time: {formatTime(elapsedMs)}</p>
+        )}
         {stats && <StatsDisplay stats={stats} highlight={guesses} />}
         {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>Play Again</button>}
         <button onClick={handleShare} className={styles.btn}>{copied ? 'Copied!' : 'Share'}</button>

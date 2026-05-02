@@ -22,6 +22,7 @@ model DailyResult {
   date      String   // 'YYYY-MM-DD'
   guesses   Int
   solved    Boolean
+  timeSecs  Int?
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])

@@ -5,6 +5,8 @@ export interface Stats {
   bestStreak: number;
   lastPlayedDate: string | null;
   distribution: Record<string, number>;
+  totalSolveMs: number;
+  timedSolves: number;
 }
 
 const KEY = 'wordle-stats';
@@ -16,6 +18,8 @@ const DEFAULT: Stats = {
   bestStreak: 0,
   lastPlayedDate: null,
   distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0 },
+  totalSolveMs: 0,
+  timedSolves: 0,
 };
 
 function dateStr(offset = 0): string {
@@ -39,7 +43,7 @@ function saveStats(s: Stats): void {
   localStorage.setItem(KEY, JSON.stringify(s));
 }
 
-export function recordResult(won: boolean, guesses: number): Stats {
+export function recordResult(won: boolean, guesses: number, timeSecs?: number): Stats {
   const stats = loadStats();
   const today = dateStr();
 
@@ -55,6 +59,10 @@ export function recordResult(won: boolean, guesses: number): Stats {
     next.distribution[key] = (next.distribution[key] ?? 0) + 1;
     next.currentStreak = stats.lastPlayedDate === dateStr(-1) ? stats.currentStreak + 1 : 1;
     next.bestStreak = Math.max(next.currentStreak, stats.bestStreak);
+    if (typeof timeSecs === 'number' && timeSecs > 0) {
+      next.totalSolveMs += timeSecs * 1000;
+      next.timedSolves++;
+    }
   } else {
     next.currentStreak = 0;
   }

@@ -6,11 +6,18 @@ interface StatsDisplayProps {
   highlight?: number | null;
 }
 
+function formatAvgTime(totalMs: number, count: number): string {
+  if (count === 0) return '—';
+  const s = Math.round(totalMs / 1000 / count);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
 export default function StatsDisplay({ stats, highlight }: StatsDisplayProps) {
   const winPct = stats.gamesPlayed > 0
     ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100)
     : 0;
   const maxDist = Math.max(...Object.values(stats.distribution), 1);
+  const avgTime = formatAvgTime(stats.totalSolveMs ?? 0, stats.timedSolves ?? 0);
 
   return (
     <div className={styles.container}>
@@ -20,6 +27,7 @@ export default function StatsDisplay({ stats, highlight }: StatsDisplayProps) {
           { value: winPct, label: 'Win %' },
           { value: stats.currentStreak, label: 'Streak' },
           { value: stats.bestStreak, label: 'Best' },
+          { value: avgTime, label: 'Avg Time' },
         ].map(({ value, label }) => (
           <div key={label} className={styles.stat}>
             <span className={styles.statValue}>{value}</span>

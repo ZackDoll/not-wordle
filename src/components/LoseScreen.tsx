@@ -15,11 +15,17 @@ interface LoseScreenProps {
   board: BoardState;
   definition: Definition | null | 'not-found';
   stats?: Stats;
+  elapsedMs?: number;
   onDismiss: () => void;
   onPlayAgain?: () => void;
 }
 
-export default function LoseScreen({ word, board, definition, stats, onDismiss, onPlayAgain }: LoseScreenProps) {
+function formatTime(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+export default function LoseScreen({ word, board, definition, stats, elapsedMs, onDismiss, onPlayAgain }: LoseScreenProps) {
   const { colorBlind } = useSettings();
   const [copied, setCopied] = useState(false);
 
@@ -37,6 +43,9 @@ export default function LoseScreen({ word, board, definition, stats, onDismiss, 
         <p className={styles.wordLost}>{word}</p>
         <WordDefinition definition={definition} />
         <p className={styles.subtext}>The word was {word.toLowerCase()}</p>
+        {elapsedMs != null && elapsedMs > 0 && (
+          <p className={styles.subtext}>Time: {formatTime(elapsedMs)}</p>
+        )}
         {stats && <StatsDisplay stats={stats} />}
         {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>Play Again</button>}
         <button onClick={handleShare} className={styles.btn}>{copied ? 'Copied!' : 'Share'}</button>

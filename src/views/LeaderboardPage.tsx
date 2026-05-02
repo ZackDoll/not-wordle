@@ -10,6 +10,11 @@ interface Entry {
   rank: number;
   username: string;
   guesses: number;
+  timeSecs: number | null;
+}
+
+function formatTime(secs: number): string {
+  return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
 }
 
 function pstDate(): string {
@@ -45,6 +50,7 @@ export default function LeaderboardPage() {
             <span className={styles.colRank}>#</span>
             <span className={styles.colName}>Player</span>
             <span className={styles.colGuesses}>Guesses</span>
+            <span className={styles.colTime}>Time</span>
           </div>
           {entries.map(entry => (
             <div
@@ -56,6 +62,7 @@ export default function LeaderboardPage() {
               </span>
               <span className={styles.colName}>{entry.username}</span>
               <span className={styles.colGuesses}>{entry.guesses} / 6</span>
+              <span className={styles.colTime}>{entry.timeSecs != null ? formatTime(entry.timeSecs) : '—'}</span>
             </div>
           ))}
         </div>

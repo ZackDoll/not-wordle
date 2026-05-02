@@ -14,6 +14,7 @@ import Keyboard from './Keyboard';
 import HowToPlay from './HowToPlay';
 import WinScreen from './WinScreen';
 import LoseScreen from './LoseScreen';
+import ReadyScreen from './ReadyScreen';
 import styles from './Game.module.css';
 
 const ROWS = 6;
@@ -34,6 +35,11 @@ interface DailyState {
 function todayStr(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function formatTime(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
 interface Constraints {
@@ -80,12 +86,12 @@ function validateHardMode(guess: string[], constraints: Constraints): string | n
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
-function submitResult(token: string, guesses: number, solved: boolean) {
+function submitResult(token: string, guesses: number, solved: boolean, timeSecs?: number) {
   const date = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
   fetch(`${API}/results`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ date, guesses, solved }),
+    body: JSON.stringify({ date, guesses, solved, timeSecs }),
   }).catch(() => {});
 }
 
@@ -132,6 +138,21 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
       return true;
     }
   });
+
+  // Timer state
+  const [playerReady, setPlayerReady] = useState(false);
+  const playerReadyRef = useRef(false);
+  const startTimeMsRef = useRef<number | null>(null);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  function handleStart() {
+    const now = Date.now();
+    startTimeMsRef.current = now;
+    playerReadyRef.current = true;
+    setPlayerReady(true);
+    timerIntervalRef.current = setInterval(() => setElapsedMs(Date.now() - now), 1000);
+  }
 
   useEffect(() => {
     if (!localStorage.getItem('wordle-seen-intro')) setShowIntro(true);
@@ -210,6 +231,9 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
         }
       }
       constraintsRef.current = { positions, letters };
+      // Skip the ready screen for restored sessions — timer would be meaningless mid-game
+      playerReadyRef.current = true;
+      setPlayerReady(true);
     } catch {}
     setReady(true);
   }, [target, initialWord]);
@@ -223,9 +247,16 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
     } catch {}
   }, [board, currentRow, currentCol, guessCount, initialWord, target]);
 
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    };
+  }, []);
+
   const handleKey = useCallback(
     (key: string) => {
-      if (isFlippingRef.current || won || currentRow >= ROWS) return;
+      if (isFlippingRef.current || won || currentRow >= ROWS || !playerReadyRef.current) return;
 
       if (key === 'ENTER') {
         if (currentCol < COLS || target.length === 0) return;
@@ -264,18 +295,30 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
         setTimeout(() => {
           isFlippingRef.current = false;
           setFlippingRow(null);
+
+          // Stop timer and capture final elapsed time
+          if (timerIntervalRef.current) {
+            clearInterval(timerIntervalRef.current);
+            timerIntervalRef.current = null;
+          }
+          const finalElapsedMs = startTimeMsRef.current ? Date.now() - startTimeMsRef.current : 0;
+          setElapsedMs(finalElapsedMs);
+          const timeSecs = startTimeMsRef.current && finalElapsedMs > 0
+            ? Math.round(finalElapsedMs / 1000)
+            : undefined;
+
           if (didWin) {
             setGuessCount(rowJustScored + 1);
             setWon(true);
             if (!initialWord) {
-              setGameStats(recordResult(true, rowJustScored + 1));
-              if (token) submitResult(token, rowJustScored + 1, true);
+              setGameStats(recordResult(true, rowJustScored + 1, timeSecs));
+              if (token) submitResult(token, rowJustScored + 1, true, timeSecs);
             }
           } else if (rowJustScored === ROWS - 1) {
             setLost(true);
             if (!initialWord) {
               setGameStats(recordResult(false, 0));
-              if (token) submitResult(token, 0, false);
+              if (token) submitResult(token, 0, false, timeSecs);
             }
           }
           setCurrentRow(rowJustScored + 1);
@@ -320,8 +363,12 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
 
   return (
     <div className={styles.game} style={ready ? undefined : { visibility: 'hidden' }}>
+      {ready && !playerReady && <ReadyScreen onStart={handleStart} />}
       {showIntro && <HowToPlay onDismiss={dismissIntro} />}
       {error && <div className={styles.error}>{error}</div>}
+      {playerReady && !won && !lost && (
+        <div className={styles.timer}>{formatTime(elapsedMs)}</div>
+      )}
       <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
       <Keyboard onKey={handleKey} letterStates={letterStates} />
       {won && (
@@ -331,6 +378,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           board={board}
           definition={definition}
           stats={gameStats ?? undefined}
+          elapsedMs={elapsedMs}
           onDismiss={() => setWon(false)}
           onPlayAgain={onPlayAgain}
         />
@@ -341,6 +389,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           board={board}
           definition={definition}
           stats={gameStats ?? undefined}
+          elapsedMs={elapsedMs}
           onDismiss={() => setLost(false)}
           onPlayAgain={onPlayAgain}
         />

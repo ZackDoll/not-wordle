@@ -7,6 +7,14 @@
   padding: 2rem 0;
 }
 
+.timer {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
 .error {
   position: absolute;
   top: 0.5rem;
