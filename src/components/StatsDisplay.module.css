@@ -1,0 +1,84 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+.numbers {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.distLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  align-self: flex-start;
+}
+
+.distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+}
+
+.distRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.distNum {
+  font-size: 0.8rem;
+  font-weight: 700;
+  width: 0.75rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.distBar {
+  background: var(--muted);
+  height: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.35rem;
+  min-width: 1.5rem;
+  transition: width 0.4s ease;
+}
+
+.distBarHighlight {
+  background: var(--tile-correct-bg);
+}
+
+.distCount {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+}

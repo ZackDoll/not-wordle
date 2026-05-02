@@ -14,19 +14,26 @@
   letter-spacing: -0.025em;
 }
 
-.settingsBtn {
+.rightBtns {
   position: absolute;
   right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.iconBtn {
   color: var(--muted);
   background: none;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
+  padding: 0.25rem;
   transition: color 0.15s;
 }
 
-.settingsBtn:hover { color: var(--foreground); }
+.iconBtn:hover { color: var(--foreground); }
 
 .backBtn {
   position: absolute;

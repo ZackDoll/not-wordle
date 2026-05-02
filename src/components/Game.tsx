@@ -6,6 +6,8 @@ import { useSettings } from '@/context/SettingsContext';
 import { ordinal } from '@/utils/ordinal';
 import type { Definition } from '@/utils/dictionary';
 import { fetchDefinition } from '@/utils/dictionary';
+import type { Stats } from '@/utils/stats';
+import { recordResult } from '@/utils/stats';
 import Board from './Board';
 import Keyboard from './Keyboard';
 import HowToPlay from './HowToPlay';
@@ -90,6 +92,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
   });
   const wordSetRef = useRef<Set<string>>(new Set());
   const [definition, setDefinition] = useState<Definition | null>(null);
+  const [gameStats, setGameStats] = useState<Stats | null>(null);
   const [showIntro, setShowIntro] = useState(false);
 
   useEffect(() => {
@@ -188,8 +191,10 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           if (didWin) {
             setGuessCount(rowJustScored + 1);
             setWon(true);
+            if (!initialWord) setGameStats(recordResult(true, rowJustScored + 1));
           } else if (rowJustScored === ROWS - 1) {
             setLost(true);
+            if (!initialWord) setGameStats(recordResult(false, 0));
           }
           setCurrentRow(rowJustScored + 1);
           setCurrentCol(0);
@@ -243,6 +248,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           guesses={guessCount}
           board={board}
           definition={definition}
+          stats={gameStats ?? undefined}
           onDismiss={() => setWon(false)}
           onPlayAgain={onPlayAgain}
         />
@@ -252,6 +258,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           word={target.join('')}
           board={board}
           definition={definition}
+          stats={gameStats ?? undefined}
           onDismiss={() => setLost(false)}
           onPlayAgain={onPlayAgain}
         />
