@@ -69,5 +69,5 @@
 }
 
 .flipping {
-  animation: tile-flip 400ms forwards;
+  animation: tile-flip 400ms both;
 }
