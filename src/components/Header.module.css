@@ -20,6 +20,9 @@
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.025em;
+  padding: 0 9rem;
+  text-align: center;
+  min-width: 0;
 }
 
 .rightBtns {
@@ -128,3 +131,9 @@
 .dropdownLogout:hover { background: var(--border); }
 
 .icon { height: 1.25rem; width: 1.25rem; }
+
+@media (max-width: 480px) {
+  .iconLabel { display: none; }
+  .title { padding: 0 7rem; }
+  .userBtn { max-width: 4rem; }
+}
