@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-const FALLBACK = 'CRANE';
+function loadWords(): string[] {
+  const text = readFileSync(join(process.cwd(), 'public', 'valid_words.txt'), 'utf-8');
+  return text.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
+}
 
 export async function GET() {
-  try {
-    const res = await fetch('https://random-word-api.vercel.app/api?words=1&length=5', { cache: 'no-store' });
-    const [word]: string[] = await res.json();
-    return NextResponse.json({ word: word.toUpperCase() });
-  } catch {
-    return NextResponse.json({ word: FALLBACK });
-  }
+  const words = loadWords();
+  const word = words[Math.floor(Math.random() * words.length)];
+  return NextResponse.json({ word });
 }

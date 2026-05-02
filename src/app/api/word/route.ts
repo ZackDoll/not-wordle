@@ -1,19 +1,26 @@
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from 'next/server';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-const FALLBACK = 'CRANE';
+function loadWords(): string[] {
+  const text = readFileSync(join(process.cwd(), 'public', 'valid_words.txt'), 'utf-8');
+  return text.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
+}
+
+function dateKey(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+}
 
 const getDailyWord = unstable_cache(
   async () => {
-    try {
-      const res = await fetch('https://random-word-api.vercel.app/api?words=1&length=5');
-      const [word]: string[] = await res.json();
-      return word.toUpperCase();
-    } catch {
-      return FALLBACK;
-    }
+    const words = loadWords();
+    const key = dateKey();
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+    return words[hash % words.length];
   },
-  [new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' })],
+  ['daily-word'],
   { revalidate: 86400 }
 );
 
