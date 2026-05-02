@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Image from 'next/image';
 import logo from '@/app/assets/wordlent_logo.png';
 import { useSettings } from '@/context/SettingsContext';
@@ -20,13 +20,6 @@ function GearIcon() {
   );
 }
 
-function BackIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={styles.icon}>
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  );
-}
 
 function TrophyIcon() {
   return (
@@ -68,8 +61,6 @@ export default function Header() {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { darkMode, hardMode, colorBlind, setDarkMode, setHardMode, setColorBlind } = useSettings();
   const { user, logout } = useAuth();
-  const { pathname } = useLocation();
-  const isHome = pathname === '/';
 
   useEffect(() => {
     if (!userMenuOpen) return;
@@ -85,14 +76,10 @@ export default function Header() {
   return (
     <>
       <header className={styles.header}>
-        {!isHome && (
-          <Link to="/" className={styles.backBtn} aria-label="back to home">
-            <BackIcon />
-          </Link>
-        )}
         <Link to="/" className={styles.logoLink}>
           <Image src={logo} alt="Wordlen't" height={32} />
         </Link>
+        <span className={styles.title}>Wordlen&apos;t</span>
         <div className={styles.rightBtns}>
           <Link to="/leaderboard" className={styles.iconBtn} aria-label="leaderboard">
             <TrophyIcon />
