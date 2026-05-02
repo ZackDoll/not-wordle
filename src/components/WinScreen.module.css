@@ -59,3 +59,16 @@
 }
 
 .btn:hover { opacity: 0.8; }
+
+.btnSecondary {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s;
+}
+
+.btnSecondary:hover { color: var(--foreground); }

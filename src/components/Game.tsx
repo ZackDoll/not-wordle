@@ -199,12 +199,14 @@ export default function Game() {
         <WinScreen
           word={target.join('')}
           guesses={guessCount}
+          board={board}
           onDismiss={() => setWon(false)}
         />
       )}
       {lost && (
         <LoseScreen
           word={target.join('')}
+          board={board}
           onDismiss={() => setLost(false)}
         />
       )}
