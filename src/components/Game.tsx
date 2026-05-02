@@ -20,6 +20,20 @@ const COLS = 5;
 const FLIP_STAGGER = 150;
 const FLIP_DURATION = 400;
 const TOTAL_FLIP_MS = (COLS - 1) * FLIP_STAGGER + FLIP_DURATION;
+const DAILY_STATE_KEY = 'wordle-daily-state';
+
+interface DailyState {
+  date: string;
+  board: BoardState;
+  currentRow: number;
+  currentCol: number;
+  guessCount: number;
+}
+
+function todayStr(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
 interface Constraints {
   positions: (string | null)[];
@@ -146,6 +160,43 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
     const id = setTimeout(() => setError(null), 1500);
     return () => clearTimeout(id);
   }, [error]);
+
+  useEffect(() => {
+    if (initialWord || target.length === 0) return;
+    try {
+      const raw = localStorage.getItem(DAILY_STATE_KEY);
+      if (!raw) return;
+      const saved: DailyState = JSON.parse(raw);
+      if (saved.date !== todayStr()) return;
+      setBoard(saved.board);
+      setCurrentRow(saved.currentRow);
+      setCurrentCol(saved.currentCol);
+      setGuessCount(saved.guessCount);
+      const lastRow = saved.board[saved.currentRow - 1];
+      const isWon = !!lastRow && lastRow.every(t => t.state === 'correct');
+      const isLost = saved.currentRow >= ROWS && !isWon;
+      setWon(isWon);
+      setLost(isLost);
+      const positions: (string | null)[] = Array(COLS).fill(null);
+      const letters = new Set<string>();
+      for (const row of saved.board) {
+        for (let i = 0; i < COLS; i++) {
+          if (row[i].state === 'correct') positions[i] = row[i].letter;
+          if (row[i].state === 'present') letters.add(row[i].letter);
+        }
+      }
+      constraintsRef.current = { positions, letters };
+    } catch {}
+  }, [target, initialWord]);
+
+  useEffect(() => {
+    if (initialWord || target.length === 0) return;
+    if (currentRow === 0 && currentCol === 0) return;
+    try {
+      const state: DailyState = { date: todayStr(), board, currentRow, currentCol, guessCount };
+      localStorage.setItem(DAILY_STATE_KEY, JSON.stringify(state));
+    } catch {}
+  }, [board, currentRow, currentCol, guessCount, initialWord, target]);
 
   const handleKey = useCallback(
     (key: string) => {
