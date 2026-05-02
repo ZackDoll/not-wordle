@@ -8,10 +8,10 @@
   position: relative;
 }
 
-.title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .rightBtns {

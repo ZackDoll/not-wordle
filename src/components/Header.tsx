@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import Image from 'next/image';
+import logo from '@/app/assets/wordlent_logo.png';
 import { useSettings } from '@/context/SettingsContext';
 import { useAuth } from '@/context/AuthContext';
 import Settings from './Settings';
@@ -88,7 +90,9 @@ export default function Header() {
             <BackIcon />
           </Link>
         )}
-        <span className={styles.title}>Wordlen&apos;t</span>
+        <Link to="/" className={styles.logoLink}>
+          <Image src={logo} alt="Wordlen't" height={32} />
+        </Link>
         <div className={styles.rightBtns}>
           <Link to="/leaderboard" className={styles.iconBtn} aria-label="leaderboard">
             <TrophyIcon />
