@@ -65,9 +65,10 @@ const emptyBoard = (): BoardState =>
 
 interface GameProps {
   initialWord?: string;
+  onPlayAgain?: () => void;
 }
 
-export default function Game({ initialWord }: GameProps = {}) {
+export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
   const { hardMode } = useSettings();
   const [target, setTarget] = useState<string[]>([]);
   const [board, setBoard] = useState<BoardState>(emptyBoard());
@@ -209,6 +210,7 @@ export default function Game({ initialWord }: GameProps = {}) {
           guesses={guessCount}
           board={board}
           onDismiss={() => setWon(false)}
+          onPlayAgain={onPlayAgain}
         />
       )}
       {lost && (
@@ -216,6 +218,7 @@ export default function Game({ initialWord }: GameProps = {}) {
           word={target.join('')}
           board={board}
           onDismiss={() => setLost(false)}
+          onPlayAgain={onPlayAgain}
         />
       )}
     </div>

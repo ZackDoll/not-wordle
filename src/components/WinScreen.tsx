@@ -11,9 +11,10 @@ interface WinScreenProps {
   guesses: number;
   board: BoardState;
   onDismiss: () => void;
+  onPlayAgain?: () => void;
 }
 
-export default function WinScreen({ word, guesses, board, onDismiss }: WinScreenProps) {
+export default function WinScreen({ word, guesses, board, onDismiss, onPlayAgain }: WinScreenProps) {
   const { colorBlind } = useSettings();
   const [copied, setCopied] = useState(false);
 
@@ -30,6 +31,7 @@ export default function WinScreen({ word, guesses, board, onDismiss }: WinScreen
         <h2 className={styles.heading}>you got it!</h2>
         <p className={styles.word}>{word}</p>
         <p className={styles.subtext}>solved in {guesses} / 6 {guesses === 1 ? 'guess' : 'guesses'}</p>
+        {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>play again</button>}
         <button onClick={handleShare} className={styles.btn}>{copied ? 'copied!' : 'share'}</button>
         <button onClick={onDismiss} className={styles.btnSecondary}>see board</button>
       </div>

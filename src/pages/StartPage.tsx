@@ -14,7 +14,7 @@ const modes = [
     description: 'A random word every game, playable any time. No waiting required.',
     btn: 'Play',
     to: '/play',
-    available: false,
+    available: true,
   },
   {
     title: 'Custom Word',

@@ -10,9 +10,10 @@ interface LoseScreenProps {
   word: string;
   board: BoardState;
   onDismiss: () => void;
+  onPlayAgain?: () => void;
 }
 
-export default function LoseScreen({ word, board, onDismiss }: LoseScreenProps) {
+export default function LoseScreen({ word, board, onDismiss, onPlayAgain }: LoseScreenProps) {
   const { colorBlind } = useSettings();
   const [copied, setCopied] = useState(false);
 
@@ -29,6 +30,7 @@ export default function LoseScreen({ word, board, onDismiss }: LoseScreenProps) 
         <h2 className={styles.heading}>better luck next time</h2>
         <p className={styles.wordLost}>{word}</p>
         <p className={styles.subtext}>the word was {word.toLowerCase()}</p>
+        {onPlayAgain && <button onClick={onPlayAgain} className={styles.btn}>play again</button>}
         <button onClick={handleShare} className={styles.btn}>{copied ? 'copied!' : 'share'}</button>
         <button onClick={onDismiss} className={styles.btnSecondary}>see board</button>
       </div>
