@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useSettings } from '@/context/SettingsContext';
+import { useAuth } from '@/context/AuthContext';
 import Settings from './Settings';
 import StatsModal from './StatsModal';
+import AuthModal from './AuthModal';
 import styles from './Header.module.css';
 
 function GearIcon() {
@@ -35,10 +37,21 @@ function BarChartIcon() {
   );
 }
 
+function PersonIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={styles.icon}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+
 export default function Header() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const { darkMode, hardMode, colorBlind, setDarkMode, setHardMode, setColorBlind } = useSettings();
+  const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const isHome = pathname === '/';
 
@@ -55,12 +68,22 @@ export default function Header() {
           <button onClick={() => setStatsOpen(true)} className={styles.iconBtn} aria-label="view statistics">
             <BarChartIcon />
           </button>
+          {user ? (
+            <button onClick={logout} className={styles.userBtn} aria-label="log out" title="click to log out">
+              {user.username}
+            </button>
+          ) : (
+            <button onClick={() => setAuthOpen(true)} className={styles.iconBtn} aria-label="sign in">
+              <PersonIcon />
+            </button>
+          )}
           <button onClick={() => setSettingsOpen(true)} className={styles.iconBtn} aria-label="open settings">
             <GearIcon />
           </button>
         </div>
       </header>
       {statsOpen && <StatsModal onDismiss={() => setStatsOpen(false)} />}
+      {authOpen && <AuthModal onDismiss={() => setAuthOpen(false)} />}
       {settingsOpen && (
         <Settings
           darkMode={darkMode}

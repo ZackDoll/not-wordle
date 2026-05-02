@@ -8,12 +8,12 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  username     String        @unique
-  passwordHash String
-  createdAt    DateTime      @default(now())
-  results      DailyResult[]
+  id        String        @id @default(cuid())
+  googleId  String        @unique
+  email     String        @unique
+  username  String        @unique
+  createdAt DateTime      @default(now())
+  results   DailyResult[]
 }
 
 model DailyResult {
