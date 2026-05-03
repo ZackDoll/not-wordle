@@ -12,7 +12,7 @@ interface DictionaryEntry {
 }
 
 function loadWords(): string[] {
-  const text = readFileSync(join(process.cwd(), 'public', 'valid_words.txt'), 'utf-8');
+  const text = readFileSync(join(process.cwd(), 'public', 'wordle-answers-alphabetical.txt'), 'utf-8');
   return text.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
 }
 

@@ -57,6 +57,17 @@ A Wordle clone that is, legally speaking, not Wordle.
 
 ---
 
+## Word Lists
+
+Two word lists live in `public/`:
+
+- **`wordle-answers-alphabetical.txt`** - the curated set of common words the game picks from as daily and quick play answers (~2,300 words)
+- **`valid_words.txt`** - the full dictionary of accepted guesses (~14,800 words); any word here can be typed as a guess even if it will never appear as an answer
+
+To swap in a different answer set, replace `wordle-answers-alphabetical.txt`. To allow or ban specific guesses, edit `valid_words.txt`.
+
+---
+
 ## Tech Stack
 
 ### Frontend
