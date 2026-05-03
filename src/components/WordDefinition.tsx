@@ -10,8 +10,12 @@ export default function WordDefinition({ definition }: { definition: Definition 
   return (
     <div className={styles.container}>
       {definition.phonetic && <p className={styles.phonetic}>{definition.phonetic}</p>}
-      <p className={styles.partOfSpeech}>{definition.partOfSpeech}</p>
-      <p className={styles.definition}>{definition.definition}</p>
+      {definition.meanings.map(({ partOfSpeech, definition: def }, i) => (
+        <div key={i} className={styles.meaning}>
+          <p className={styles.partOfSpeech}>{partOfSpeech}</p>
+          <p className={styles.definition}>{def}</p>
+        </div>
+      ))}
     </div>
   );
 }

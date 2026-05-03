@@ -2,11 +2,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
   border-top: 1px solid var(--border);
   padding-top: 0.75rem;
   max-width: 18rem;
   text-align: center;
+}
+
+.meaning {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
 .phonetic {
