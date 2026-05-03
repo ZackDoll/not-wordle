@@ -3,6 +3,14 @@ import { NextResponse } from 'next/server';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
+interface DictionaryEntry {
+  phonetic?: string;
+  meanings?: Array<{
+    partOfSpeech?: string;
+    definitions?: Array<{ definition?: string }>;
+  }>;
+}
+
 function loadWords(): string[] {
   const text = readFileSync(join(process.cwd(), 'public', 'valid_words.txt'), 'utf-8');
   return text.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
@@ -22,14 +30,14 @@ async function fetchDefinition(word: string) {
     );
     if (res.status === 404) return 'not-found' as const;
     if (!res.ok) return null;
-    const data: any[] = await res.json();
+    const data = await res.json() as DictionaryEntry[];
     if (!Array.isArray(data) || data.length === 0) return null;
-    const phonetic = data[0]?.phonetic as string | undefined;
+    const phonetic = data[0]?.phonetic;
     const byPos = new Map<string, string>();
     for (const entry of data) {
       for (const meaning of entry?.meanings ?? []) {
-        const pos = meaning?.partOfSpeech as string;
-        const def = meaning?.definitions?.[0]?.definition as string;
+        const pos = meaning?.partOfSpeech;
+        const def = meaning?.definitions?.[0]?.definition;
         if (!pos || !def) continue;
         if (!byPos.has(pos) || def.length > byPos.get(pos)!.length) {
           byPos.set(pos, def);
@@ -48,11 +56,11 @@ async function fetchDefinition(word: string) {
 }
 
 const getDailyWordWithDefinition = unstable_cache(
-  async (_dateStr: string) => {
+  async (dateStr: string) => {
     const words = loadWords();
     const word = words[dayIndex() % words.length];
     const definition = await fetchDefinition(word);
-    return { word, definition };
+    return { word, definition, _date: dateStr };
   },
   ['daily-word'],
   { revalidate: 86400 }
