@@ -10,7 +10,7 @@ export default function QuickPlayPage() {
 
   function fetchWord() {
     setWord(null);
-    fetch('/api/random-word')
+    fetch('/api/random-word', { cache: 'no-store' })
       .then(r => r.json())
       .then(({ word: w }: { word: string }) => {
         setWord(w);

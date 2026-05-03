@@ -12,5 +12,7 @@ function loadWords(): string[] {
 export async function GET() {
   const words = loadWords();
   const word = words[Math.floor(Math.random() * words.length)];
-  return NextResponse.json({ word });
+  return NextResponse.json({ word }, {
+    headers: { 'Cache-Control': 'no-store' },
+  });
 }
