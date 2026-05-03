@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { BoardState, TileState } from '@/types/game';
 import { useSettings } from '@/context/SettingsContext';
 import { useAuth } from '@/context/AuthContext';
@@ -109,6 +110,7 @@ interface GameProps {
 export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
   const { hardMode } = useSettings();
   const { token } = useAuth();
+  const navigate = useNavigate();
   const [target, setTarget] = useState<string[]>([]);
   const [board, setBoard] = useState<BoardState>(emptyBoard());
   const [currentRow, setCurrentRow] = useState(0);
@@ -409,7 +411,10 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
         />
       )}
       {showAuthForLeaderboard && (
-        <AuthModal onDismiss={() => setShowAuthForLeaderboard(false)} />
+        <AuthModal
+          onDismiss={() => setShowAuthForLeaderboard(false)}
+          onSuccess={() => navigate('/leaderboard')}
+        />
       )}
       {lost && (
         <LoseScreen

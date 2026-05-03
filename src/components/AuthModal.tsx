@@ -5,7 +5,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthModal.module.css';
 
-export default function AuthModal({ onDismiss }: { onDismiss: () => void }) {
+export default function AuthModal({ onDismiss, onSuccess }: { onDismiss: () => void; onSuccess?: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const { googleSignIn } = useAuth();
 
@@ -13,7 +13,8 @@ export default function AuthModal({ onDismiss }: { onDismiss: () => void }) {
     if (!response.credential) return;
     try {
       await googleSignIn(response.credential);
-      onDismiss();
+      if (onSuccess) onSuccess();
+      else onDismiss();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed');
     }
