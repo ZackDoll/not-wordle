@@ -48,7 +48,7 @@ async function fetchDefinition(word: string) {
 }
 
 const getDailyWordWithDefinition = unstable_cache(
-  async () => {
+  async (_dateStr: string) => {
     const words = loadWords();
     const word = words[dayIndex() % words.length];
     const definition = await fetchDefinition(word);
@@ -59,6 +59,7 @@ const getDailyWordWithDefinition = unstable_cache(
 );
 
 export async function GET() {
-  const { word, definition } = await getDailyWordWithDefinition();
+  const dateStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+  const { word, definition } = await getDailyWordWithDefinition(dateStr);
   return NextResponse.json({ word, definition });
 }
