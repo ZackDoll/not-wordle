@@ -167,13 +167,13 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
   const pausedElapsedMsRef = useRef<number | null>(null);
   const finalElapsedMsRef = useRef<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
+  const [, setTimerTick] = useState(0);
 
   function handleStart() {
     const paused = pausedElapsedMsRef.current;
     const startMs = paused != null ? Date.now() - paused : Date.now();
     startTimeMsRef.current = startMs;
     pausedElapsedMsRef.current = null;
-    if (paused != null) setElapsedMs(paused);
     playerReadyRef.current = true;
     setPlayerReady(true);
     setIsResuming(false);
@@ -181,11 +181,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
 
   useEffect(() => {
     if (!playerReady || won || lost) return;
-    const id = setInterval(() => {
-      if (startTimeMsRef.current != null) {
-        setElapsedMs(Date.now() - startTimeMsRef.current);
-      }
-    }, 1000);
+    const id = setInterval(() => setTimerTick(t => t + 1), 1000);
     return () => clearInterval(id);
   }, [playerReady, won, lost]);
 
@@ -429,7 +425,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
       {showIntro && <HowToPlay onDismiss={dismissIntro} />}
       {error && <div className={styles.error}>{error}</div>}
       {playerReady && !won && !lost && (
-        <div className={styles.timer}>{formatTime(elapsedMs)}</div>
+        <div className={styles.timer}>{formatTime(startTimeMsRef.current ? Date.now() - startTimeMsRef.current : 0)}</div>
       )}
       <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
       <Keyboard onKey={handleKey} letterStates={letterStates} />
