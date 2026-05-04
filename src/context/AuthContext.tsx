@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { syncOnSignIn } from '@/utils/stats';
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 const TOKEN_KEY = 'wordle-token';
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(TOKEN_KEY, data.token);
     setToken(data.token);
     setUser(data.user);
+    syncOnSignIn(data.token);
   }
 
   function logout() {

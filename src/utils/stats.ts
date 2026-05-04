@@ -1,3 +1,5 @@
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+
 export type StatsMode = 'daily' | 'quick';
 
 export interface Stats {
@@ -59,6 +61,55 @@ export function loadStats(mode: StatsMode = 'daily'): Stats {
 
 function saveStats(mode: StatsMode, s: Stats): void {
   localStorage.setItem(KEYS[mode], JSON.stringify(s));
+}
+
+function parseServerStats(raw: Record<string, unknown> | null): Stats | null {
+  if (!raw) return null;
+  return {
+    ...DEFAULT,
+    ...raw,
+    distribution: { ...DEFAULT.distribution, ...((raw.distribution as Record<string, number>) ?? {}) },
+  } as Stats;
+}
+
+export async function fetchServerStats(token: string): Promise<{ daily: Stats; quick: Stats } | null> {
+  try {
+    const r = await fetch(`${API}/stats`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) return null;
+    const data = await r.json() as { daily: Record<string, unknown> | null; quick: Record<string, unknown> | null };
+    return {
+      daily: parseServerStats(data.daily) ?? { ...DEFAULT, distribution: { ...DEFAULT.distribution } },
+      quick: parseServerStats(data.quick) ?? { ...DEFAULT, distribution: { ...DEFAULT.distribution } },
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function pushStats(token: string, mode: StatsMode, stats: Stats): Promise<void> {
+  try {
+    await fetch(`${API}/stats/${mode}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(stats),
+    });
+  } catch {}
+}
+
+export async function syncOnSignIn(token: string): Promise<void> {
+  try {
+    const r = await fetch(`${API}/stats`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) return;
+    const data = await r.json() as { daily: Record<string, unknown> | null; quick: Record<string, unknown> | null };
+    for (const mode of ['daily', 'quick'] as StatsMode[]) {
+      const server = data[mode];
+      const hasServer = server && (server.gamesPlayed as number) > 0;
+      if (!hasServer) {
+        const local = loadStats(mode);
+        if (local.gamesPlayed > 0) await pushStats(token, mode, local);
+      }
+    }
+  } catch {}
 }
 
 export function recordResult(mode: StatsMode, won: boolean, guesses: number, timeSecs?: number): Stats {

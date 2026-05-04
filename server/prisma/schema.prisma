@@ -14,6 +14,26 @@ model User {
   username  String        @unique
   createdAt DateTime      @default(now())
   results   DailyResult[]
+  stats     UserStats[]
+}
+
+model UserStats {
+  id             String   @id @default(cuid())
+  userId         String
+  mode           String
+  gamesPlayed    Int      @default(0)
+  gamesWon       Int      @default(0)
+  currentStreak  Int      @default(0)
+  bestStreak     Int      @default(0)
+  lastPlayedDate String?
+  distribution   Json     @default("{}")
+  totalSolveMs   Int      @default(0)
+  timedSolves    Int      @default(0)
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, mode])
 }
 
 model DailyResult {

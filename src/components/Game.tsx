@@ -9,7 +9,7 @@ import { ordinal } from '@/utils/ordinal';
 import type { Definition } from '@/utils/dictionary';
 import { fetchDefinition } from '@/utils/dictionary';
 import type { Stats, StatsMode } from '@/utils/stats';
-import { recordResult } from '@/utils/stats';
+import { recordResult, pushStats } from '@/utils/stats';
 import Board from './Board';
 import Keyboard from './Keyboard';
 import HowToPlay from './HowToPlay';
@@ -361,7 +361,9 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
             setWon(true);
             setShowWinScreen(true);
             if (mode !== 'custom') {
-              setGameStats(recordResult(mode, true, rowJustScored + 1, timeSecs));
+              const newStats = recordResult(mode, true, rowJustScored + 1, timeSecs);
+              setGameStats(newStats);
+              if (token) pushStats(token, mode, newStats);
             }
             if (mode === 'daily') {
               if (token) {
@@ -375,7 +377,9 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
             setLost(true);
             setShowLoseScreen(true);
             if (mode !== 'custom') {
-              setGameStats(recordResult(mode, false, 0));
+              const newStats = recordResult(mode, false, 0);
+              setGameStats(newStats);
+              if (token) pushStats(token, mode, newStats);
             }
             if (mode === 'daily' && token) {
               submitResult(token, 0, false, timeSecs);

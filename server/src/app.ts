@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import authRoutes from './routes/auth';
 import resultsRoutes from './routes/results';
+import statsRoutes from './routes/stats';
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.get('/health', (_req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/results', resultsRoutes);
+app.use('/stats', statsRoutes);
 
 export default app;
