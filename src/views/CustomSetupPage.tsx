@@ -34,7 +34,7 @@ export default function CustomSetupPage() {
       <div className={styles.card}>
         <h1 className={styles.heading}>Custom Wordle</h1>
         <p className={styles.subtext}>Enter a 5-letter word. Share the link. Watch your friend suffer.</p>
-        <p className={styles.subtext}>Any 5 letters work, it can be a real word, but it doesn't have to be</p>
+        <p className={styles.subtext}>Any 5 letters work, it can be a real word, but it doesn&apos;t have to be</p>
         <div className={styles.row}>
           <input
             className={styles.input}
