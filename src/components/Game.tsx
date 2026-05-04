@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { BoardState, TileState } from '@/types/game';
 import { useSettings } from '@/context/SettingsContext';
 import { useAuth } from '@/context/AuthContext';
@@ -426,15 +426,20 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
       {ready && !playerReady && <ReadyScreen onStart={handleStart} isResume={isResuming} />}
       {showIntro && <HowToPlay onDismiss={dismissIntro} />}
       {error && <div className={styles.error}>{error}</div>}
-      {playerReady && !won && !lost && (
-        <div className={styles.timer}>{formatTime(startTimeMsRef.current ? Date.now() - startTimeMsRef.current : 0)}</div>
-      )}
-      {(won && !showWinScreen) && (
-        <button className={styles.resultsBtn} onClick={() => setShowWinScreen(true)}>Results</button>
-      )}
-      {(lost && !showLoseScreen) && (
-        <button className={styles.resultsBtn} onClick={() => setShowLoseScreen(true)}>Results</button>
-      )}
+      <div className={styles.topBar}>
+        <Link to="/" className={styles.homeBtn}>← Home</Link>
+        <div className={styles.topBarCenter}>
+          {playerReady && !won && !lost && (
+            <div className={styles.timer}>{formatTime(startTimeMsRef.current ? Date.now() - startTimeMsRef.current : 0)}</div>
+          )}
+          {(won && !showWinScreen) && (
+            <button className={styles.resultsBtn} onClick={() => setShowWinScreen(true)}>Results</button>
+          )}
+          {(lost && !showLoseScreen) && (
+            <button className={styles.resultsBtn} onClick={() => setShowLoseScreen(true)}>Results</button>
+          )}
+        </div>
+      </div>
       <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
       <Keyboard onKey={handleKey} letterStates={letterStates} />
       {showWinScreen && (
