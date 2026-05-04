@@ -1,7 +1,8 @@
-import { unstable_cache } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+
+export const revalidate = 3600; // recheck hourly so a new day is never more than 1hr stale
 
 interface DictionaryEntry {
   phonetic?: string;
@@ -16,9 +17,8 @@ function loadWords(): string[] {
   return text.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
 }
 
-function dayIndex(): number {
-  const pst = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-  const dayNum = Math.floor(new Date(pst).getTime() / 86400000);
+function dayIndex(dateStr: string): number {
+  const dayNum = Math.floor(new Date(dateStr).getTime() / 86400000);
   return ((dayNum * 1664525 + 1013904223) >>> 0);
 }
 
@@ -55,19 +55,10 @@ async function fetchDefinition(word: string) {
   }
 }
 
-const getDailyWordWithDefinition = unstable_cache(
-  async (dateStr: string) => {
-    const words = loadWords();
-    const word = words[dayIndex() % words.length];
-    const definition = await fetchDefinition(word);
-    return { word, definition, _date: dateStr };
-  },
-  ['daily-word'],
-  { revalidate: 86400 }
-);
-
 export async function GET() {
   const dateStr = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-  const { word, definition } = await getDailyWordWithDefinition(dateStr);
-  return NextResponse.json({ word, definition });
+  const words = loadWords();
+  const word = words[dayIndex(dateStr) % words.length];
+  const definition = await fetchDefinition(word);
+  return NextResponse.json({ word, definition, date: dateStr });
 }
