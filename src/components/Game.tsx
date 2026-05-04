@@ -289,7 +289,9 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
     try {
       const state: DailyState = {
         date: todayStr(), board, currentRow, currentCol, guessCount,
-        pausedElapsedMs: startTimeMsRef.current != null ? Date.now() - startTimeMsRef.current : null,
+        pausedElapsedMs: startTimeMsRef.current != null
+          ? Date.now() - startTimeMsRef.current
+          : pausedElapsedMsRef.current,
         finalElapsedMs: (won || lost) ? finalElapsedMsRef.current : null,
       };
       localStorage.setItem(DAILY_STATE_KEY, JSON.stringify(state));
