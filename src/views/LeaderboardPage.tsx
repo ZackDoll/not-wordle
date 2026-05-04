@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { ordinal } from '@/utils/ordinal';
+import AuthModal from '@/components/AuthModal';
 import styles from './LeaderboardPage.module.css';
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -21,9 +23,18 @@ function pstDate(): string {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
 }
 
+function formatDate(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  return `${weekday}, ${month} ${ordinal(d)}`;
+}
+
 export default function LeaderboardPage() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
   const { user } = useAuth();
   const date = pstDate();
 
@@ -38,7 +49,7 @@ export default function LeaderboardPage() {
   return (
     <main className={styles.page}>
       <h1 className={styles.heading}>Today&apos;s Leaderboard</h1>
-      <p className={styles.date}>{date}</p>
+      <p className={styles.date}>{formatDate(date)}</p>
 
       {loading ? (
         <p className={styles.empty}>Loading...</p>
@@ -69,8 +80,12 @@ export default function LeaderboardPage() {
       )}
 
       {!user && (
-        <p className={styles.hint}>Sign in to appear on the leaderboard</p>
+        <p className={styles.hint}>
+          <button className={styles.hintLink} onClick={() => setShowAuth(true)}>Sign in</button>
+          {' '}to appear on the leaderboard
+        </p>
       )}
+      {showAuth && <AuthModal onDismiss={() => setShowAuth(false)} />}
     </main>
   );
 }
