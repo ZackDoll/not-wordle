@@ -32,7 +32,7 @@ interface DailyState {
   currentRow: number;
   currentCol: number;
   guessCount: number;
-  startTimeMs: number | null;
+  pausedElapsedMs: number | null;
   finalElapsedMs: number | null;
 }
 
@@ -162,12 +162,15 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
   const [isResuming, setIsResuming] = useState(false);
   const playerReadyRef = useRef(false);
   const startTimeMsRef = useRef<number | null>(null);
+  const pausedElapsedMsRef = useRef<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   function handleStart() {
-    const startMs = startTimeMsRef.current ?? Date.now();
+    const paused = pausedElapsedMsRef.current;
+    const startMs = paused != null ? Date.now() - paused : Date.now();
     startTimeMsRef.current = startMs;
+    pausedElapsedMsRef.current = null;
     playerReadyRef.current = true;
     setPlayerReady(true);
     setIsResuming(false);
@@ -259,9 +262,9 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
         if (isWon) {
           setPendingResult({ guesses: saved.guessCount, solved: true, date: saved.date, timeSecs: undefined });
         }
-      } else if (saved.startTimeMs) {
+      } else if (saved.pausedElapsedMs != null) {
         // In-progress with timer started: show "Resume Timer" screen
-        startTimeMsRef.current = saved.startTimeMs;
+        pausedElapsedMsRef.current = saved.pausedElapsedMs;
         setIsResuming(true);
       } else {
         // In-progress, timer never started: show normal "Are You Ready?" screen
@@ -276,7 +279,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
     try {
       const state: DailyState = {
         date: todayStr(), board, currentRow, currentCol, guessCount,
-        startTimeMs: startTimeMsRef.current,
+        pausedElapsedMs: startTimeMsRef.current != null ? Date.now() - startTimeMsRef.current : null,
         finalElapsedMs: (won || lost) ? elapsedMs : null,
       };
       localStorage.setItem(DAILY_STATE_KEY, JSON.stringify(state));
