@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ordinal } from '@/utils/ordinal';
 import type { Definition } from '@/utils/dictionary';
 import { fetchDefinition } from '@/utils/dictionary';
-import type { Stats } from '@/utils/stats';
+import type { Stats, StatsMode } from '@/utils/stats';
 import { recordResult } from '@/utils/stats';
 import Board from './Board';
 import Keyboard from './Keyboard';
@@ -105,9 +105,10 @@ const emptyBoard = (): BoardState =>
 interface GameProps {
   initialWord?: string;
   onPlayAgain?: () => void;
+  mode?: StatsMode | 'custom';
 }
 
-export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
+export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameProps = {}) {
   const { hardMode } = useSettings();
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -330,8 +331,10 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
           if (didWin) {
             setGuessCount(rowJustScored + 1);
             setWon(true);
-            if (!initialWord) {
-              setGameStats(recordResult(true, rowJustScored + 1, timeSecs));
+            if (mode !== 'custom') {
+              setGameStats(recordResult(mode, true, rowJustScored + 1, timeSecs));
+            }
+            if (mode === 'daily') {
               if (token) {
                 submitResult(token, rowJustScored + 1, true, timeSecs);
               } else {
@@ -341,9 +344,11 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
             }
           } else if (rowJustScored === ROWS - 1) {
             setLost(true);
-            if (!initialWord) {
-              setGameStats(recordResult(false, 0));
-              if (token) submitResult(token, 0, false, timeSecs);
+            if (mode !== 'custom') {
+              setGameStats(recordResult(mode, false, 0));
+            }
+            if (mode === 'daily' && token) {
+              submitResult(token, 0, false, timeSecs);
             }
           }
           setCurrentRow(rowJustScored + 1);
@@ -372,7 +377,7 @@ export default function Game({ initialWord, onPlayAgain }: GameProps = {}) {
       });
       setCurrentCol(c => c + 1);
     },
-    [won, currentRow, currentCol, board, target, hardMode, initialWord]
+    [won, currentRow, currentCol, board, target, hardMode, mode, token]
   );
 
   useEffect(() => {

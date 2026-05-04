@@ -1,3 +1,5 @@
+export type StatsMode = 'daily' | 'quick';
+
 export interface Stats {
   gamesPlayed: number;
   gamesWon: number;
@@ -9,7 +11,12 @@ export interface Stats {
   timedSolves: number;
 }
 
-const KEY = 'wordle-stats';
+const KEYS: Record<StatsMode, string> = {
+  daily: 'wordle-stats-daily',
+  quick: 'wordle-stats-quick',
+};
+
+const LEGACY_KEY = 'wordle-stats';
 
 const DEFAULT: Stats = {
   gamesPlayed: 0,
@@ -28,10 +35,9 @@ function dateStr(offset = 0): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-export function loadStats(): Stats {
+function parseStats(raw: string | null): Stats {
+  if (!raw) return { ...DEFAULT, distribution: { ...DEFAULT.distribution } };
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return { ...DEFAULT, distribution: { ...DEFAULT.distribution } };
     const parsed = JSON.parse(raw) as Partial<Stats>;
     return { ...DEFAULT, ...parsed, distribution: { ...DEFAULT.distribution, ...parsed.distribution } };
   } catch {
@@ -39,25 +45,40 @@ export function loadStats(): Stats {
   }
 }
 
-function saveStats(s: Stats): void {
-  localStorage.setItem(KEY, JSON.stringify(s));
+export function loadStats(mode: StatsMode = 'daily'): Stats {
+  try {
+    if (mode === 'daily' && !localStorage.getItem(KEYS.daily)) {
+      const legacy = localStorage.getItem(LEGACY_KEY);
+      if (legacy) localStorage.setItem(KEYS.daily, legacy);
+    }
+    return parseStats(localStorage.getItem(KEYS[mode]));
+  } catch {
+    return { ...DEFAULT, distribution: { ...DEFAULT.distribution } };
+  }
 }
 
-export function recordResult(won: boolean, guesses: number, timeSecs?: number): Stats {
-  const stats = loadStats();
+function saveStats(mode: StatsMode, s: Stats): void {
+  localStorage.setItem(KEYS[mode], JSON.stringify(s));
+}
+
+export function recordResult(mode: StatsMode, won: boolean, guesses: number, timeSecs?: number): Stats {
+  const stats = loadStats(mode);
   const today = dateStr();
 
-  if (stats.lastPlayedDate === today) return stats;
+  if (mode === 'daily' && stats.lastPlayedDate === today) return stats;
 
   const next: Stats = { ...stats, distribution: { ...stats.distribution } };
   next.gamesPlayed++;
-  next.lastPlayedDate = today;
+  if (mode === 'daily') next.lastPlayedDate = today;
 
   if (won) {
     next.gamesWon++;
-    const key = String(guesses);
-    next.distribution[key] = (next.distribution[key] ?? 0) + 1;
-    next.currentStreak = stats.lastPlayedDate === dateStr(-1) ? stats.currentStreak + 1 : 1;
+    next.distribution[String(guesses)] = (next.distribution[String(guesses)] ?? 0) + 1;
+    if (mode === 'daily') {
+      next.currentStreak = stats.lastPlayedDate === dateStr(-1) ? stats.currentStreak + 1 : 1;
+    } else {
+      next.currentStreak = stats.currentStreak + 1;
+    }
     next.bestStreak = Math.max(next.currentStreak, stats.bestStreak);
     if (typeof timeSecs === 'number' && timeSecs > 0) {
       next.totalSolveMs += timeSecs * 1000;
@@ -67,6 +88,6 @@ export function recordResult(won: boolean, guesses: number, timeSecs?: number): 
     next.currentStreak = 0;
   }
 
-  saveStats(next);
+  saveStats(mode, next);
   return next;
 }

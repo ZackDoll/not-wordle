@@ -28,7 +28,7 @@ export default function CustomGamePage() {
 
   return (
     <main className={styles.page}>
-      <Game initialWord={word.toUpperCase()} />
+      <Game initialWord={word.toUpperCase()} mode="custom" />
     </main>
   );
 }

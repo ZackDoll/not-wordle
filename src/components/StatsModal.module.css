@@ -1,0 +1,26 @@
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--border);
+  border-radius: 0.5rem;
+  padding: 0.2rem;
+  width: 100%;
+}
+
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.tabActive {
+  background: var(--surface);
+  color: var(--foreground);
+}

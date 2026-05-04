@@ -30,7 +30,7 @@ export default function QuickPlayPage() {
 
   return (
     <main className={styles.page}>
-      <Game key={gameKey} initialWord={word} onPlayAgain={fetchWord} />
+      <Game key={gameKey} initialWord={word} onPlayAgain={fetchWord} mode="quick" />
     </main>
   );
 }
