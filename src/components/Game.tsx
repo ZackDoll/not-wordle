@@ -119,7 +119,9 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
   const [currentRow, setCurrentRow] = useState(0);
   const [currentCol, setCurrentCol] = useState(0);
   const [won, setWon] = useState(false);
+  const [showWinScreen, setShowWinScreen] = useState(false);
   const [lost, setLost] = useState(false);
+  const [showLoseScreen, setShowLoseScreen] = useState(false);
   const [guessCount, setGuessCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [shakingRow, setShakingRow] = useState<number | null>(null);
@@ -254,7 +256,9 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
       const isWon = !!lastRow && lastRow.every(t => t.state === 'correct');
       const isLost = saved.currentRow >= ROWS && !isWon;
       setWon(isWon);
+      setShowWinScreen(isWon);
       setLost(isLost);
+      setShowLoseScreen(isLost);
       const positions: (string | null)[] = Array(COLS).fill(null);
       const letters = new Set<string>();
       for (const row of saved.board) {
@@ -355,6 +359,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
           if (didWin) {
             setGuessCount(rowJustScored + 1);
             setWon(true);
+            setShowWinScreen(true);
             if (mode !== 'custom') {
               setGameStats(recordResult(mode, true, rowJustScored + 1, timeSecs));
             }
@@ -368,6 +373,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
             }
           } else if (rowJustScored === ROWS - 1) {
             setLost(true);
+            setShowLoseScreen(true);
             if (mode !== 'custom') {
               setGameStats(recordResult(mode, false, 0));
             }
@@ -425,7 +431,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
       )}
       <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
       <Keyboard onKey={handleKey} letterStates={letterStates} />
-      {won && (
+      {showWinScreen && (
         <WinScreen
           word={target.join('')}
           guesses={guessCount}
@@ -436,7 +442,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
           showShare={mode !== 'quick'}
           showLeaderboardSignIn={pendingResult !== null && !token}
           onRequestSignIn={() => setShowAuthForLeaderboard(true)}
-          onDismiss={() => setWon(false)}
+          onDismiss={() => setShowWinScreen(false)}
           onPlayAgain={onPlayAgain}
         />
       )}
@@ -446,7 +452,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
           onSuccess={() => navigate('/leaderboard')}
         />
       )}
-      {lost && (
+      {showLoseScreen && (
         <LoseScreen
           word={target.join('')}
           board={board}
@@ -454,7 +460,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
           stats={gameStats ?? undefined}
           elapsedMs={elapsedMs}
           showShare={mode !== 'quick'}
-          onDismiss={() => setLost(false)}
+          onDismiss={() => setShowLoseScreen(false)}
           onPlayAgain={onPlayAgain}
         />
       )}
