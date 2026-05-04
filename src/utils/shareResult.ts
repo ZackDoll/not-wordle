@@ -26,5 +26,5 @@ export function buildShareText(
     .map(row => row.map(t => TILES[t.state as keyof typeof TILES]?.[mode] ?? '⬛').join(''))
     .join('\n');
 
-  return `Wordlen't ${score}${time}\n\n${grid}`;
+  return `Wordlen't ${score}${time}\n\n${grid}\n\nhttps://not-wordle-nr34.vercel.app`;
 }

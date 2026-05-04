@@ -427,6 +427,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
           definition={definition}
           stats={gameStats ?? undefined}
           elapsedMs={elapsedMs}
+          showShare={mode !== 'quick'}
           showLeaderboardSignIn={pendingResult !== null && !token}
           onRequestSignIn={() => setShowAuthForLeaderboard(true)}
           onDismiss={() => setWon(false)}
@@ -446,6 +447,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
           definition={definition}
           stats={gameStats ?? undefined}
           elapsedMs={elapsedMs}
+          showShare={mode !== 'quick'}
           onDismiss={() => setLost(false)}
           onPlayAgain={onPlayAgain}
         />
