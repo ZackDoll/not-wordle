@@ -163,19 +163,29 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
   const playerReadyRef = useRef(false);
   const startTimeMsRef = useRef<number | null>(null);
   const pausedElapsedMsRef = useRef<number | null>(null);
+  const finalElapsedMsRef = useRef<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
-  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   function handleStart() {
     const paused = pausedElapsedMsRef.current;
     const startMs = paused != null ? Date.now() - paused : Date.now();
     startTimeMsRef.current = startMs;
     pausedElapsedMsRef.current = null;
+    if (paused != null) setElapsedMs(paused);
     playerReadyRef.current = true;
     setPlayerReady(true);
     setIsResuming(false);
-    timerIntervalRef.current = setInterval(() => setElapsedMs(Date.now() - startMs), 1000);
   }
+
+  useEffect(() => {
+    if (!playerReady || won || lost) return;
+    const id = setInterval(() => {
+      if (startTimeMsRef.current != null) {
+        setElapsedMs(Date.now() - startTimeMsRef.current);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [playerReady, won, lost]);
 
   useEffect(() => {
     if (!localStorage.getItem('wordle-seen-intro')) setShowIntro(true);
@@ -280,18 +290,12 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
       const state: DailyState = {
         date: todayStr(), board, currentRow, currentCol, guessCount,
         pausedElapsedMs: startTimeMsRef.current != null ? Date.now() - startTimeMsRef.current : null,
-        finalElapsedMs: (won || lost) ? elapsedMs : null,
+        finalElapsedMs: (won || lost) ? finalElapsedMsRef.current : null,
       };
       localStorage.setItem(DAILY_STATE_KEY, JSON.stringify(state));
     } catch {}
-  }, [board, currentRow, currentCol, guessCount, elapsedMs, won, lost, initialWord, target]);
+  }, [board, currentRow, currentCol, guessCount, won, lost, initialWord, target]);
 
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => {
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    };
-  }, []);
 
   const handleKey = useCallback(
     (key: string) => {
@@ -340,12 +344,9 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
           isFlippingRef.current = false;
           setFlippingRow(null);
 
-          // Stop timer and capture final elapsed time
-          if (timerIntervalRef.current) {
-            clearInterval(timerIntervalRef.current);
-            timerIntervalRef.current = null;
-          }
           const finalElapsedMs = startTimeMsRef.current ? Date.now() - startTimeMsRef.current : 0;
+          startTimeMsRef.current = null;
+          finalElapsedMsRef.current = finalElapsedMs;
           setElapsedMs(finalElapsedMs);
           const timeSecs = startTimeMsRef.current && finalElapsedMs > 0
             ? Math.round(finalElapsedMs / 1000)
