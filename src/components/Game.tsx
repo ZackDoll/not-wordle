@@ -348,13 +348,15 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
           isFlippingRef.current = false;
           setFlippingRow(null);
 
-          const finalElapsedMs = startTimeMsRef.current ? Date.now() - startTimeMsRef.current : 0;
-          startTimeMsRef.current = null;
-          finalElapsedMsRef.current = finalElapsedMs;
-          setElapsedMs(finalElapsedMs);
-          const timeSecs = startTimeMsRef.current && finalElapsedMs > 0
-            ? Math.round(finalElapsedMs / 1000)
-            : undefined;
+          const isGameOver = didWin || rowJustScored === ROWS - 1;
+          let timeSecs: number | undefined;
+          if (isGameOver) {
+            const finalElapsedMs = startTimeMsRef.current ? Date.now() - startTimeMsRef.current : 0;
+            startTimeMsRef.current = null;
+            finalElapsedMsRef.current = finalElapsedMs;
+            setElapsedMs(finalElapsedMs);
+            timeSecs = finalElapsedMs > 0 ? Math.round(finalElapsedMs / 1000) : undefined;
+          }
 
           if (didWin) {
             setGuessCount(rowJustScored + 1);
