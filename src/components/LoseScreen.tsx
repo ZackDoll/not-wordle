@@ -38,8 +38,8 @@ export default function LoseScreen({ word, board, definition, stats, elapsedMs, 
   }
 
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.card}>
+    <div className={styles.backdrop} onClick={onDismiss}>
+      <div className={styles.card} onClick={e => e.stopPropagation()}>
         <h2 className={styles.heading}>Better Luck Next Time</h2>
         <p className={styles.wordLost}>{word}</p>
         <WordDefinition definition={definition} />

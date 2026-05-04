@@ -429,6 +429,12 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
       {playerReady && !won && !lost && (
         <div className={styles.timer}>{formatTime(startTimeMsRef.current ? Date.now() - startTimeMsRef.current : 0)}</div>
       )}
+      {(won && !showWinScreen) && (
+        <button className={styles.resultsBtn} onClick={() => setShowWinScreen(true)}>Results</button>
+      )}
+      {(lost && !showLoseScreen) && (
+        <button className={styles.resultsBtn} onClick={() => setShowLoseScreen(true)}>Results</button>
+      )}
       <Board board={board} shakingRow={shakingRow} onShakeEnd={() => setShakingRow(null)} flippingRow={flippingRow} />
       <Keyboard onKey={handleKey} letterStates={letterStates} />
       {showWinScreen && (

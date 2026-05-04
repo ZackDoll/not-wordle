@@ -41,8 +41,8 @@ export default function WinScreen({ word, guesses, board, definition, stats, ela
   }
 
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.card}>
+    <div className={styles.backdrop} onClick={onDismiss}>
+      <div className={styles.card} onClick={e => e.stopPropagation()}>
         <h2 className={styles.heading}>You Got It!</h2>
         <p className={styles.word}>{word}</p>
         <WordDefinition definition={definition} />

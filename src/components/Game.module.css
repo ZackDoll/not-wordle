@@ -15,6 +15,22 @@
   color: var(--muted);
 }
 
+.resultsBtn {
+  padding: 0.4rem 1.2rem;
+  border-radius: 0.375rem;
+  border: none;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.resultsBtn:hover {
+  opacity: 1;
+}
+
 .error {
   position: absolute;
   top: 0.5rem;
