@@ -298,7 +298,12 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
       if (isFlippingRef.current || won || currentRow >= ROWS || !playerReadyRef.current) return;
 
       if (key === 'ENTER') {
-        if (currentCol < COLS || target.length === 0) return;
+        if (target.length === 0) return;
+        if (currentCol < COLS) {
+          setError('Not enough letters');
+          setShakingRow(currentRow);
+          return;
+        }
         const guess = board[currentRow].map(t => t.letter);
 
         if (mode !== 'custom' && wordSetRef.current.size > 0 && !wordSetRef.current.has(guess.join(''))) {
