@@ -32,6 +32,8 @@ interface DailyState {
   currentRow: number;
   currentCol: number;
   guessCount: number;
+  startTimeMs: number | null;
+  finalElapsedMs: number | null;
 }
 
 function todayStr(): string {
@@ -157,17 +159,19 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
 
   // Timer state
   const [playerReady, setPlayerReady] = useState(false);
+  const [isResuming, setIsResuming] = useState(false);
   const playerReadyRef = useRef(false);
   const startTimeMsRef = useRef<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   function handleStart() {
-    const now = Date.now();
-    startTimeMsRef.current = now;
+    const startMs = startTimeMsRef.current ?? Date.now();
+    startTimeMsRef.current = startMs;
     playerReadyRef.current = true;
     setPlayerReady(true);
-    timerIntervalRef.current = setInterval(() => setElapsedMs(Date.now() - now), 1000);
+    setIsResuming(false);
+    timerIntervalRef.current = setInterval(() => setElapsedMs(Date.now() - startMs), 1000);
   }
 
   useEffect(() => {
@@ -247,13 +251,20 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
         }
       }
       constraintsRef.current = { positions, letters };
-      // Skip the ready screen for restored sessions — timer would be meaningless mid-game
-      playerReadyRef.current = true;
-      setPlayerReady(true);
-      // Always set pendingResult for restored wins so the sign-in prompt persists across reloads.
-      // If already signed in, the retroactive submission fires immediately and gets a silent 409.
-      if (isWon) {
-        setPendingResult({ guesses: saved.guessCount, solved: true, date: saved.date, timeSecs: undefined });
+      if (isWon || isLost) {
+        // Completed game: skip ready screen, restore final elapsed time for win/lose screen
+        playerReadyRef.current = true;
+        setPlayerReady(true);
+        if (saved.finalElapsedMs) setElapsedMs(saved.finalElapsedMs);
+        if (isWon) {
+          setPendingResult({ guesses: saved.guessCount, solved: true, date: saved.date, timeSecs: undefined });
+        }
+      } else if (saved.startTimeMs) {
+        // In-progress with timer started: show "Resume Timer" screen
+        startTimeMsRef.current = saved.startTimeMs;
+        setIsResuming(true);
+      } else {
+        // In-progress, timer never started: show normal "Are You Ready?" screen
       }
     } catch {}
     setReady(true);
@@ -263,10 +274,14 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
     if (initialWord || target.length === 0) return;
     if (currentRow === 0 && currentCol === 0) return;
     try {
-      const state: DailyState = { date: todayStr(), board, currentRow, currentCol, guessCount };
+      const state: DailyState = {
+        date: todayStr(), board, currentRow, currentCol, guessCount,
+        startTimeMs: startTimeMsRef.current,
+        finalElapsedMs: (won || lost) ? elapsedMs : null,
+      };
       localStorage.setItem(DAILY_STATE_KEY, JSON.stringify(state));
     } catch {}
-  }, [board, currentRow, currentCol, guessCount, initialWord, target]);
+  }, [board, currentRow, currentCol, guessCount, elapsedMs, won, lost, initialWord, target]);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -393,7 +408,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
 
   return (
     <div className={styles.game} style={ready ? undefined : { visibility: 'hidden' }}>
-      {ready && !playerReady && <ReadyScreen onStart={handleStart} />}
+      {ready && !playerReady && <ReadyScreen onStart={handleStart} isResume={isResuming} />}
       {showIntro && <HowToPlay onDismiss={dismissIntro} />}
       {error && <div className={styles.error}>{error}</div>}
       {playerReady && !won && !lost && (
