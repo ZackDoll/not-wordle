@@ -34,6 +34,7 @@ interface DailyState {
   guessCount: number;
   pausedElapsedMs: number | null;
   finalElapsedMs: number | null;
+  submitted?: boolean;
 }
 
 function todayStr(): string {
@@ -90,13 +91,28 @@ function validateHardMode(guess: string[], constraints: Constraints): string | n
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
-function submitResult(token: string, guesses: number, solved: boolean, timeSecs?: number) {
+async function submitResult(token: string, guesses: number, solved: boolean, timeSecs?: number): Promise<boolean> {
   const date = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-  fetch(`${API}/results`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ date, guesses, solved, timeSecs }),
-  }).catch(() => {});
+  try {
+    const r = await fetch(`${API}/results`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ date, guesses, solved, timeSecs }),
+    });
+    return r.ok || r.status === 409;
+  } catch {
+    return false;
+  }
+}
+
+function markSubmitted() {
+  try {
+    const raw = localStorage.getItem(DAILY_STATE_KEY);
+    if (!raw) return;
+    const saved: DailyState = JSON.parse(raw);
+    if (saved.date !== todayStr()) return;
+    localStorage.setItem(DAILY_STATE_KEY, JSON.stringify({ ...saved, submitted: true }));
+  } catch {}
 }
 
 const emptyBoard = (): BoardState =>
@@ -154,7 +170,8 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
   // Submit pending result when user signs in
   useEffect(() => {
     if (token && pendingResult) {
-      submitResult(token, pendingResult.guesses, pendingResult.solved, pendingResult.timeSecs);
+      submitResult(token, pendingResult.guesses, pendingResult.solved, pendingResult.timeSecs)
+        .then(ok => { if (ok) markSubmitted(); });
       setPendingResult(null);
     }
   }, [token, pendingResult]);
@@ -269,7 +286,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
         playerReadyRef.current = true;
         setPlayerReady(true);
         if (saved.finalElapsedMs) setElapsedMs(saved.finalElapsedMs);
-        if (isWon) {
+        if (isWon && !saved.submitted) {
           setPendingResult({ guesses: saved.guessCount, solved: true, date: saved.date, timeSecs: undefined });
         }
       } else if (saved.pausedElapsedMs != null) {
@@ -367,7 +384,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
             }
             if (mode === 'daily') {
               if (token) {
-                submitResult(token, rowJustScored + 1, true, timeSecs);
+                submitResult(token, rowJustScored + 1, true, timeSecs).then(ok => { if (ok) markSubmitted(); });
               } else {
                 const date = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
                 setPendingResult({ guesses: rowJustScored + 1, solved: true, timeSecs, date });
