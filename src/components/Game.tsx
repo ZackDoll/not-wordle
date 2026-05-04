@@ -283,7 +283,7 @@ export default function Game({ initialWord, onPlayAgain, mode = 'daily' }: GameP
         if (currentCol < COLS || target.length === 0) return;
         const guess = board[currentRow].map(t => t.letter);
 
-        if (wordSetRef.current.size > 0 && !wordSetRef.current.has(guess.join(''))) {
+        if (mode !== 'custom' && wordSetRef.current.size > 0 && !wordSetRef.current.has(guess.join(''))) {
           setError('Not in word list');
           setShakingRow(currentRow);
           return;
